@@ -1,4 +1,5 @@
-"stepper.obj" 
+"stepper.obj",
+"DIO.obj" 
 TO "task2" 
 RAMSIZE(256) 
 CODE( 0X0000-0XFFFF )

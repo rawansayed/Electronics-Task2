@@ -351,6 +351,11 @@
               <FileType>1</FileType>
               <FilePath>.\stepper.c</FilePath>
             </File>
+            <File>
+              <FileName>DIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\DIO.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
