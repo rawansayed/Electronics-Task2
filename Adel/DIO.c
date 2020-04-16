@@ -298,6 +298,59 @@ unsigned char DIO_read_port(unsigned char portname)
 	return return_val;
 }
 
+void write_low_nibble(unsigned char portname,unsigned char value)
+{
+	value&=0x0f;
+	switch(portname)
+	{
+		case 0:
+		P0 &=0xf0;
+		P0|=value;
+		break;
+		
+		case 1:
+		P1 &=0xf0;
+		P1|=value;
+		break;
+		
+		case 2:
+		P2 &=0xf0;
+		P2 |=value;
+		break;
+		
+		case 3:
+		P3 &=0xf0;
+		P3 |=value;
+		break;
+	}
+}
+
+void write_high_nibble(unsigned char portname,unsigned char value)
+{
+	value<<=4;
+	switch(portname)
+	{
+		case 0:
+		P0 &=0x0f;
+		P0 |=value;
+		break;
+		
+		case 1:
+		P1 &=0x0f;
+		P1 |=value;
+		break;
+		
+		case 2:
+		P2 &=0x0f;
+		P2 |=value;
+		break;
+		
+		case 3:
+		P3 &=0x0f;
+		P3 |=value;
+		break;
+	}
+}
 
 
 
