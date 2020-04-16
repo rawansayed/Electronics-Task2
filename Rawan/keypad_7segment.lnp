@@ -1,4 +1,0 @@
-"STARTUP.obj",
-"Text1.obj" 
-TO "keypad_7segment" 
-RAMSIZE(256) 
