@@ -7,57 +7,53 @@
 #define NOTPRESSED 0xff
 
 
-unsigned char value,presed;
+unsigned char value,presed,step;
+char sevensegmentValue;
+
+char arr[4] = {0,1,2,3};
 
 void main (void)
 {
-
-keypad_vInit(1);
+ 
+	keypad_vInit(1);
 	DIO_setPort_OutPutMode(3,1);
 	seven_seg_init(0,0);
 	seven_seg_init(0,1);
 	motor_init(2,0);
 	motor_init(2,1);
+	interrupt_enable();
+	interrupt_0Enable();
+	interrupt_1Enable();
+	DIO_setPortInput(3);
+	
 	
 	
 	while(1)
 	{
-	value = keypad_u8check_press(1);
-	if (value != NOTPRESSED)
-	{
-		if (!(value==11 || value==12 ))
+		step =0;
+		presed = keypad_press(1);
+		if(presed != NOTPRESSED)
 		{
-		seven_seg_write(0,value,0);
-			delay_ms(1000);
-		}
-		else
-		{
-			if (value==11)
+			sevensegmentValue = presed;
+			while(sevensegmentValue != -1)
 			{
-				presed++;
-				seven_seg_write(0,presed,1);
-				delay_ms(1000);
+				if(step!=sevensegmentValue)
+				{
+				seven_seg_write(0,arr[step],0);
+				step++;
+				}
+				else{
+				break;
+				}
+				motor_rotate(2,0,0);
+				
+				sevensegmentValue--;
 			}
-			else
-			{
-				presed--;
-				seven_seg_write(0,presed,1);
-				delay_ms(1000);
-			}
+		
+		
 		}
-	
-	
-	}
-	if (value ==1)
-	{
-	motor_rotate(2,0,0);
-		motor_rotate(2,1,1);
-	}
-	if (value ==2)
-	{
-	motor_rotate(2,0,1);
-		motor_rotate(2,1,0);
-	}
-	
+		
+		
+		
 	}
 }

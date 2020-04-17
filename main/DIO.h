@@ -68,8 +68,12 @@ unsigned char DIO_read_port(unsigned char portname);
 	Function Description : Connect and disconnect pull up resistor to the given pin at the given port 
 */
 void DIO_setInput(char portname ,char pinnumber, char connect_pullup);
+void DIO_setPortInput(unsigned char portname);
 void write_high_nibble(unsigned char portname,unsigned char value);
 void write_low_nibble(unsigned char portname,unsigned char value);
 void delay_ms(unsigned int k);
+void interrupt_enable(void);
+void interrupt_0Enable(void);
+void interrupt_1Enable(void);
 #endif
 

@@ -390,9 +390,21 @@ void delay_ms(unsigned int k)
      for(i=0;i<=k;i++)
 	    for(j=0;j<110;j++);
 }
+void interrupt_enable(void)
+{
+		SET_BIT(IE,7);
+}
 
-
-
+void interrupt_0Enable(void)
+{
+	SET_BIT(IE,0);
+	SET_BIT(TCON,0);
+}
+void interrupt_1Enable(void)
+{
+	SET_BIT(IE,2);
+	SET_BIT(TCON,2);
+}
 
 
 

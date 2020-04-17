@@ -31,7 +31,7 @@ void motor_rotate(unsigned char portname , unsigned char setPosition,unsigned ch
 					for(i = 0; i<4; i++)
 					{
 					write_low_nibble(portname,rot_angle[i]);
-					delay_ms(1000);
+					delay_ms(500);
 					}
 			}
 			else
@@ -39,7 +39,7 @@ void motor_rotate(unsigned char portname , unsigned char setPosition,unsigned ch
 				for(i = 3; i>=0;i--)
 				{
 				write_low_nibble(portname,rot_angle[i]);
-				delay_ms(1000);
+				delay_ms(500);
 				}
 			}
 		}
@@ -50,7 +50,7 @@ void motor_rotate(unsigned char portname , unsigned char setPosition,unsigned ch
 				for(i = 0; i<4; i++)
 				{
 				write_high_nibble(portname,rot_angle[i]);
-				delay_ms(1000);
+				delay_ms(500);
 				}
 			}
 			else
@@ -58,7 +58,7 @@ void motor_rotate(unsigned char portname , unsigned char setPosition,unsigned ch
 				for(i = 3; i>=0;i--)
 				{
 				write_high_nibble(portname,rot_angle[i]);
-				delay_ms(1000);
+				delay_ms(500);
 				}
 			}
 		}

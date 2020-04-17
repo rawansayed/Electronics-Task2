@@ -15,7 +15,7 @@
 
 	  
  }
- char keypad_u8check_press(unsigned char portname)
+ char keypad_press(unsigned char portname)
  {
 	 unsigned char arr[4][3]={{1, 2, 3}
                             ,{4, 5, 6}
