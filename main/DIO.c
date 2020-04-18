@@ -405,6 +405,28 @@ void interrupt_1Enable(void)
 	SET_BIT(IE,2);
 	SET_BIT(TCON,2);
 }
+void initTimer(void)
+{
+	
+	TMOD = 0x01;       //Timer0 mode 1 
+    TH0 = 0X4B;        //Load the timer value
+    TL0 = 0XFD;
+    TR0 = 1;           //turn ON Timer zero
+    ET0 = 1;           //Enable TImer0 Interrupt
+    EA = 1;            //Enable Global Interrupt 
+	
+	/*
+  CLR_BIT(CKCON,3); // 
+	//set the timer mode 
+	SET_BIT(TMOD,1);
+	CLR_BIT(TMOD,0);
+	TL0 = 0x0F; // start value
+	TH0 = 0x00; //relaod value
+	SET_BIT(IE,1);
+	*/
+	
+}
+	
 
 
 

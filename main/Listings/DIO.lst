@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   DIO                                                               04/17/2020 03:27:33 PAGE 1   
+C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DIO
@@ -62,7 +62,7 @@ line level    source
   52   3              CLR_BIT(P3MDOUT,pinnumber);//Set the output mode of port0 to Open-Drain mode
   53   3            }
   54   2            break;
-C51 COMPILER V9.60.0.0   DIO                                                               04/17/2020 03:27:33 PAGE 2   
+C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 2   
 
   55   2          default: 
   56   2          break;
@@ -126,7 +126,7 @@ line level    source
  114   1        switch(portname)
  115   1          {
  116   2          case 0:
-C51 COMPILER V9.60.0.0   DIO                                                               04/17/2020 03:27:33 PAGE 3   
+C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 3   
 
  117   2            // make the pin as input pin
  118   2            CLR_BIT(P0MDOUT,pinnumber);//Set the output mode of pinNumber of port0 to Open-Drain mode
@@ -190,7 +190,7 @@ line level    source
  176          unsigned char DIO_read(unsigned char portname,unsigned char pinnumber)
  177          {
  178   1        unsigned char return_value=0;
-C51 COMPILER V9.60.0.0   DIO                                                               04/17/2020 03:27:33 PAGE 4   
+C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 4   
 
  179   1        switch(portname)
  180   1        {
@@ -254,7 +254,7 @@ line level    source
  238   2          if(direction==1)
  239   2          {
  240   3            P3MDOUT |= 0xff;//Set the output mode of port3 to Push-Pull mode
-C51 COMPILER V9.60.0.0   DIO                                                               04/17/2020 03:27:33 PAGE 5   
+C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 5   
 
  241   3          }
  242   2          else
@@ -318,7 +318,7 @@ line level    source
  300          
  301          void write_low_nibble(unsigned char portname,unsigned char value)
  302          {
-C51 COMPILER V9.60.0.0   DIO                                                               04/17/2020 03:27:33 PAGE 6   
+C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 6   
 
  303   1        value&=0x0f;
  304   1        switch(portname)
@@ -382,7 +382,7 @@ line level    source
  362   2            DIO_setPort_OutPutMode(0,0);//Set the output mode of pinNumber of port0 to Open-Drain mode
  363   2            DIO_write_port(0,0xff); //Set the value of the given pin in port0 as High
  364   2            break;
-C51 COMPILER V9.60.0.0   DIO                                                               04/17/2020 03:27:33 PAGE 7   
+C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 7   
 
  365   2      
  366   2          case 1: 
@@ -412,16 +412,52 @@ line level    source
  390   1           for(i=0;i<=k;i++)
  391   1            for(j=0;j<110;j++);
  392   1      }
- 393          
- 394          
- 395          
- 396          
+ 393          void interrupt_enable(void)
+ 394          {
+ 395   1          SET_BIT(IE,7);
+ 396   1      }
  397          
- 398          
+ 398          void interrupt_0Enable(void)
+ 399          {
+ 400   1        SET_BIT(IE,0);
+ 401   1        SET_BIT(TCON,0);
+ 402   1      }
+ 403          void interrupt_1Enable(void)
+ 404          {
+ 405   1        SET_BIT(IE,2);
+ 406   1        SET_BIT(TCON,2);
+ 407   1      }
+ 408          void initTimer(void)
+ 409          {
+ 410   1        
+ 411   1        TMOD = 0x01;       //Timer0 mode 1 
+ 412   1          TH0 = 0X4B;        //Load the timer value
+ 413   1          TL0 = 0XFD;
+ 414   1          TR0 = 1;           //turn ON Timer zero
+ 415   1          ET0 = 1;           //Enable TImer0 Interrupt
+ 416   1          EA = 1;            //Enable Global Interrupt 
+ 417   1        
+ 418   1        /*
+ 419   1        CLR_BIT(CKCON,3); // 
+ 420   1        //set the timer mode 
+ 421   1        SET_BIT(TMOD,1);
+ 422   1        CLR_BIT(TMOD,0);
+ 423   1        TL0 = 0x0F; // start value
+ 424   1        TH0 = 0x00; //relaod value
+ 425   1        SET_BIT(IE,1);
+ 426   1        */
+C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 8   
+
+ 427   1        
+ 428   1      }
+ 429            
+ 430          
+ 431          
+ 432          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    973    ----
+   CODE SIZE        =   1007    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

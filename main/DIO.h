@@ -75,5 +75,6 @@ void delay_ms(unsigned int k);
 void interrupt_enable(void);
 void interrupt_0Enable(void);
 void interrupt_1Enable(void);
+void initTimer();
 #endif
 
