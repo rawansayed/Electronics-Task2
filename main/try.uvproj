@@ -377,11 +377,6 @@
           <GroupName>Source Group 1</GroupName>
           <Files>
             <File>
-              <FileName>STARTUP.A51</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\STARTUP.A51</FilePath>
-            </File>
-            <File>
               <FileName>C8051F020.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\C8051F020.h</FilePath>
@@ -425,16 +420,6 @@
               <FileName>SevenSegments.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\SevenSegments.h</FilePath>
-            </File>
-            <File>
-              <FileName>stepper.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\stepper.c</FilePath>
-            </File>
-            <File>
-              <FileName>stepper.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\stepper.h</FilePath>
             </File>
           </Files>
         </Group>

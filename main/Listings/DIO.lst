@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 1   
+C51 COMPILER V9.60.0.0   DIO                                                               04/19/2020 01:28:06 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DIO
@@ -62,7 +62,7 @@ line level    source
   52   3              CLR_BIT(P3MDOUT,pinnumber);//Set the output mode of port0 to Open-Drain mode
   53   3            }
   54   2            break;
-C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 2   
+C51 COMPILER V9.60.0.0   DIO                                                               04/19/2020 01:28:06 PAGE 2   
 
   55   2          default: 
   56   2          break;
@@ -126,7 +126,7 @@ line level    source
  114   1        switch(portname)
  115   1          {
  116   2          case 0:
-C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 3   
+C51 COMPILER V9.60.0.0   DIO                                                               04/19/2020 01:28:06 PAGE 3   
 
  117   2            // make the pin as input pin
  118   2            CLR_BIT(P0MDOUT,pinnumber);//Set the output mode of pinNumber of port0 to Open-Drain mode
@@ -163,301 +163,107 @@ line level    source
  149   1      }
  150          
  151          
- 152          void DIO_toggle(unsigned char portname,unsigned char pinnumber)
+ 152          unsigned char DIO_read(unsigned char portname,unsigned char pinnumber)
  153          {
- 154   1        switch(portname)
- 155   1        {
- 156   2          case 0:
- 157   2            TOG_BIT(P0,pinnumber);//Toggle the value of the given pin in port A
- 158   2            break;
- 159   2          
- 160   2          case 1:
- 161   2            TOG_BIT(P1,pinnumber);//Toggle the value of the given pin in port B
- 162   2            break;
- 163   2          
- 164   2          case 2:
- 165   2            TOG_BIT(P2,pinnumber);//Toggle the value of the given pin in port C
- 166   2            break;
- 167   2          
- 168   2          case 3:
- 169   2            TOG_BIT(P3,pinnumber);//Toggle the value of the given pin in port D
- 170   2            break;
- 171   2          
- 172   2          default: break;
- 173   2        }
- 174   1      }
- 175          
- 176          unsigned char DIO_read(unsigned char portname,unsigned char pinnumber)
- 177          {
- 178   1        unsigned char return_value=0;
-C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 4   
+ 154   1        unsigned char return_value=0;
+ 155   1        switch(portname)
+ 156   1        {
+ 157   2          case 0 :
+ 158   2          return_value=READ_BIT(P0,pinnumber);//Read the value from the given pin in port A
+ 159   2          break;
+ 160   2          
+ 161   2          case 1 :
+ 162   2          return_value=READ_BIT(P1,pinnumber);//Read the value from the given pin in port B
+ 163   2          break;
+ 164   2          
+ 165   2          case 2:
+ 166   2          return_value=READ_BIT(P2,pinnumber);//Read the value from the given pin in port C
+ 167   2          break;
+ 168   2          
+ 169   2          case 3 :
+ 170   2          return_value=READ_BIT(P3,pinnumber);//Read the value from the given pin in port D
+ 171   2          break;
+ 172   2          default: 
+ 173   2          break;
+ 174   2        }
+ 175   1        return return_value ;
+ 176   1      }
+ 177          
+ 178          
+C51 COMPILER V9.60.0.0   DIO                                                               04/19/2020 01:28:06 PAGE 4   
 
- 179   1        switch(portname)
- 180   1        {
- 181   2          case 0 :
- 182   2          return_value=READ_BIT(P0,pinnumber);//Read the value from the given pin in port A
- 183   2          break;
- 184   2          
- 185   2          case 1 :
- 186   2          return_value=READ_BIT(P1,pinnumber);//Read the value from the given pin in port B
- 187   2          break;
- 188   2          
- 189   2          case 2:
- 190   2          return_value=READ_BIT(P2,pinnumber);//Read the value from the given pin in port C
- 191   2          break;
- 192   2          
- 193   2          case 3 :
- 194   2          return_value=READ_BIT(P3,pinnumber);//Read the value from the given pin in port D
- 195   2          break;
- 196   2          default: 
- 197   2          break;
- 198   2        }
- 199   1        return return_value ;
- 200   1      }
- 201          
- 202          
- 203          void DIO_setPort_OutPutMode(unsigned char portname,unsigned char direction)
- 204          {
- 205   1        switch(portname)
- 206   1        {
- 207   2          case 0:
- 208   2          if(direction==1)
- 209   2          {
- 210   3            P0MDOUT |= 0xff;//Set the output mode of port0 to Push-Pull mode
- 211   3          }
- 212   2          else
- 213   2          {
- 214   3            P0MDOUT &= 0x00;//Set the output mode of port0 to Open-Drain mode
- 215   3          }
+ 179          
+ 180          
+ 181          void write_low_nibble(unsigned char portname,unsigned char value)
+ 182          {
+ 183   1        value&=0x0f;
+ 184   1        switch(portname)
+ 185   1        {
+ 186   2          case 0:
+ 187   2          P0 &=0xf0;
+ 188   2          P0|=value;
+ 189   2          break;
+ 190   2          
+ 191   2          case 1:
+ 192   2          P1 &=0xf0;
+ 193   2          P1|=value;
+ 194   2          break;
+ 195   2          
+ 196   2          case 2:
+ 197   2          P2 &=0xf0;
+ 198   2          P2 |=value;
+ 199   2          break;
+ 200   2          
+ 201   2          case 3:
+ 202   2          P3 &=0xf0;
+ 203   2          P3 |=value;
+ 204   2          break;
+ 205   2        }
+ 206   1      }
+ 207          
+ 208          void write_high_nibble(unsigned char portname,unsigned char value)
+ 209          {
+ 210   1        value<<=4;
+ 211   1        switch(portname)
+ 212   1        {
+ 213   2          case 0:
+ 214   2          P0 &=0x0f;
+ 215   2          P0 |=value;
  216   2          break;
- 217   2          case 1:
- 218   2          if(direction==1)
- 219   2          {
- 220   3            P1MDOUT |= 0xff;//Set the output mode of port1 to Push-Pull mode
- 221   3          }
- 222   2          else
- 223   2          {
- 224   3            P1MDOUT &= 0x00;//Set the output mode of port1 to Open-Drain mode
- 225   3          }
+ 217   2          
+ 218   2          case 1:
+ 219   2          P1 &=0x0f;
+ 220   2          P1 |=value;
+ 221   2          break;
+ 222   2          
+ 223   2          case 2:
+ 224   2          P2 &=0x0f;
+ 225   2          P2 |=value;
  226   2          break;
- 227   2          case 2:
- 228   2          if(direction==1)
- 229   2          {
- 230   3            P2MDOUT |= 0xff;//Set the output mode of port2 to Push-Pull mode
- 231   3          }
- 232   2          else
- 233   2          {
- 234   3            P2MDOUT &= 0x00;//Set the output mode of port2 to Open-Drain mode
- 235   3          }
- 236   2          break;
- 237   2          case 3:
- 238   2          if(direction==1)
- 239   2          {
- 240   3            P3MDOUT |= 0xff;//Set the output mode of port3 to Push-Pull mode
-C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 5   
+ 227   2          
+ 228   2          case 3:
+ 229   2          P3 &=0x0f;
+ 230   2          P3 |=value;
+ 231   2          break;
+ 232   2        }
+ 233   1      }
+ 234          
+ 235          
+ 236          
+ 237          void delay_ms(unsigned int k)
+ 238          {
+ 239   1        unsigned int i,j;
+ 240   1           for(i=0;i<=k;i++)
+C51 COMPILER V9.60.0.0   DIO                                                               04/19/2020 01:28:06 PAGE 5   
 
- 241   3          }
- 242   2          else
- 243   2          {
- 244   3            P3MDOUT &= 0x00;//Set the output mode of port3 to Open-Drain mode
- 245   3          }
- 246   2          break;
- 247   2          default: 
- 248   2          break;
- 249   2        }
- 250   1        
- 251   1      }
- 252          
- 253          void DIO_write_port(unsigned char portname,unsigned char portvalue)
- 254          {
- 255   1        switch(portname)
- 256   1        {
- 257   2          case 0 :
- 258   2            P0 = portvalue; //Write the given value to the port A
- 259   2            break ;
- 260   2          
- 261   2          case 1:
- 262   2            P1 = portvalue; //Write the given value to the port B
- 263   2            break ;
- 264   2          
- 265   2          case 2 :
- 266   2            P2 = portvalue; //Write the given value to the port C
- 267   2            break ;
- 268   2          
- 269   2          case 3:
- 270   2            P3 = portvalue; //Write the given value to the port D
- 271   2            break ;
- 272   2          
- 273   2          default:
- 274   2           break ;
- 275   2        }
- 276   1      }
- 277          
- 278          unsigned char DIO_read_port(unsigned char portname)
- 279          {
- 280   1        unsigned char return_val=0;
- 281   1        switch(portname)
- 282   1        {
- 283   2          case 0 :
- 284   2          return_val=P0; // read the value of port A 
- 285   2          break ;
- 286   2          case 1:
- 287   2          return_val=P1; // read the value of port B 
- 288   2          break ;
- 289   2          case 2 :
- 290   2          return_val=P2; // read the value of port C 
- 291   2          break ;
- 292   2          case 3:
- 293   2          return_val=P3; // read the value of port D 
- 294   2          break ;
- 295   2          default:
- 296   2          break ;
- 297   2        }
- 298   1        return return_val;
- 299   1      }
- 300          
- 301          void write_low_nibble(unsigned char portname,unsigned char value)
- 302          {
-C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 6   
-
- 303   1        value&=0x0f;
- 304   1        switch(portname)
- 305   1        {
- 306   2          case 0:
- 307   2          P0 &=0xf0;
- 308   2          P0|=value;
- 309   2          break;
- 310   2          
- 311   2          case 1:
- 312   2          P1 &=0xf0;
- 313   2          P1|=value;
- 314   2          break;
- 315   2          
- 316   2          case 2:
- 317   2          P2 &=0xf0;
- 318   2          P2 |=value;
- 319   2          break;
- 320   2          
- 321   2          case 3:
- 322   2          P3 &=0xf0;
- 323   2          P3 |=value;
- 324   2          break;
- 325   2        }
- 326   1      }
- 327          
- 328          void write_high_nibble(unsigned char portname,unsigned char value)
- 329          {
- 330   1        value<<=4;
- 331   1        switch(portname)
- 332   1        {
- 333   2          case 0:
- 334   2          P0 &=0x0f;
- 335   2          P0 |=value;
- 336   2          break;
- 337   2          
- 338   2          case 1:
- 339   2          P1 &=0x0f;
- 340   2          P1 |=value;
- 341   2          break;
- 342   2          
- 343   2          case 2:
- 344   2          P2 &=0x0f;
- 345   2          P2 |=value;
- 346   2          break;
- 347   2          
- 348   2          case 3:
- 349   2          P3 &=0x0f;
- 350   2          P3 |=value;
- 351   2          break;
- 352   2        }
- 353   1      }
- 354          
- 355          
- 356          void DIO_setPortInput(unsigned char portname)
- 357          {
- 358   1        switch(portname)
- 359   1          {
- 360   2          case 0:
- 361   2            // make the pin as input pin
- 362   2            DIO_setPort_OutPutMode(0,0);//Set the output mode of pinNumber of port0 to Open-Drain mode
- 363   2            DIO_write_port(0,0xff); //Set the value of the given pin in port0 as High
- 364   2            break;
-C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 7   
-
- 365   2      
- 366   2          case 1: 
- 367   2            // make the pin as input pin
- 368   2            DIO_setPort_OutPutMode(1,0);//Set the output mode of pinNumber of port1 to Open-Drain mode
- 369   2            DIO_write_port(1,0xff); //Set the value of the given pin in port1 as High
- 370   2            break;
- 371   2          case 2:
- 372   2            // make the pin as input pin
- 373   2            DIO_setPort_OutPutMode(2,0);//Set the output mode of pinNumber of port2 to Open-Drain mode
- 374   2            DIO_write_port(2,0xff); //Set the value of the given pin in port2 as High
- 375   2            break;
- 376   2            
- 377   2          case 3:
- 378   2            // make the pin as input pin
- 379   2            DIO_setPort_OutPutMode(3,0);//Set the output mode of pinNumber of port3 to Open-Drain mode
- 380   2            DIO_write_port(0,0xff); //Set the value of the given pin in port3 as High
- 381   2            break;
- 382   2          
- 383   2        }
- 384   1        
- 385   1      }
- 386          
- 387          void delay_ms(unsigned int k)
- 388          {
- 389   1        unsigned int i,j;
- 390   1           for(i=0;i<=k;i++)
- 391   1            for(j=0;j<110;j++);
- 392   1      }
- 393          void interrupt_enable(void)
- 394          {
- 395   1          SET_BIT(IE,7);
- 396   1      }
- 397          
- 398          void interrupt_0Enable(void)
- 399          {
- 400   1        SET_BIT(IE,0);
- 401   1        SET_BIT(TCON,0);
- 402   1      }
- 403          void interrupt_1Enable(void)
- 404          {
- 405   1        SET_BIT(IE,2);
- 406   1        SET_BIT(TCON,2);
- 407   1      }
- 408          void initTimer(void)
- 409          {
- 410   1        
- 411   1        TMOD = 0x01;       //Timer0 mode 1 
- 412   1          TH0 = 0X4B;        //Load the timer value
- 413   1          TL0 = 0XFD;
- 414   1          TR0 = 1;           //turn ON Timer zero
- 415   1          ET0 = 1;           //Enable TImer0 Interrupt
- 416   1          EA = 1;            //Enable Global Interrupt 
- 417   1        
- 418   1        /*
- 419   1        CLR_BIT(CKCON,3); // 
- 420   1        //set the timer mode 
- 421   1        SET_BIT(TMOD,1);
- 422   1        CLR_BIT(TMOD,0);
- 423   1        TL0 = 0x0F; // start value
- 424   1        TH0 = 0x00; //relaod value
- 425   1        SET_BIT(IE,1);
- 426   1        */
-C51 COMPILER V9.60.0.0   DIO                                                               04/18/2020 05:36:40 PAGE 8   
-
- 427   1        
- 428   1      }
- 429            
- 430          
- 431          
- 432          
+ 241   1            for(j=0;j<110;j++);
+ 242   1      }
+ 243          
+ 244          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1007    ----
+   CODE SIZE        =    725    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

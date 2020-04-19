@@ -3,129 +3,260 @@
 #include "DIO.h"
 #include "Keypad.h"
 #include "SevenSegments.h"
-#include "stepper.h"
 #define NOTPRESSED 0xff
+#define true 1
+#define false 0
 
-#include <stdio.h>
-#include <stdlib.h>
-
-int cmpfunc (const void * a, const void * b);
-void append(char *ar, char size, char ch);
 void checkPresed(void);
 
+void open(void);
+void stop(void);
+void close(void);
+void elevUP(void);
+void elecvDOWN(void);
+void elevSTOP(void);
+unsigned char presed,step,buttonFlagPresed;
+char sevensegmentValue,elevator;
 
-unsigned char value,presed,step;
-char sevensegmentValue;
-char up[3] ={6,0,4}; // up falgs list
-char down[3] ={1,5,7}; // down flags list
+char up = false;
+char down = false;
 char buttonPresed[8] = {1,1,1,1,1,1,1,1};
 char buttonPresedFlags[8] = {0,0,0,0,0,0,0,0};
 char keypadFlags[5] = {0,1,2,3,4};
 char keypadvalues[5] = {0};
 char arr[4] = {0,1,2,3}; // sevenSegments number
-// renames pins name
-sbit oneUp = P3^0;
-sbit oneDown = P3^1;
-sbit twoUp = P3^4;
-sbit twoDown = P3^5;
-sbit zeroUp = P3^6;
-sbit threeDown = P3^7;
 
-//char UPlist[3] = {P3,0,0}; // list of upPins
-//char DOWNlist[3] = {oneDown,twoDown,threeDown}; // list of downPins
+
 volatile char count = 0;
-volatile char flag = 0;
+volatile char count2 = 0;
 /*
 void ext_int_0() interrupt 0
 { 
-    count++;
-}
-
-void ext_int_1() interrupt 2
-{ 
-    count--;
+    count = 0;
 }
 */
-sbit LED = P0^0;
+
+
 void timer0_isr() interrupt 1
 {
 	TH0 = 0X4B;        //ReLoad the timer value
     TL0 = 0XFD;
     count++;        // Toggle the LED pin 
-		LED = !LED;
+		count2++;
 }
 
 void main (void)
 {
+	sevensegmentValue = 0;
+		seven_seg_write(0,sevensegmentValue,0);
+	
 	WDTCN = 0xDE;
 	WDTCN = 0xAD;
 	keypad_vInit(1);
-	DIO_setPort_OutPutMode(3,1);
+
 	seven_seg_init(0,0);
 	seven_seg_init(0,1);
-	motor_init(2,0);
-	motor_init(2,1);
-	interrupt_enable();
+
 	
-	interrupt_1Enable();
-	DIO_setPortInput(3);
+	P3MDOUT &= 0x00;
+	P3 = 0xff;
 	
-	 CLR_BIT(CKCON,3); // 
-	//set the timer mode 
-	CLR_BIT(TMOD,1);
-	CLR_BIT(TMOD,0);
-	TL0 = 0x00; // start value
-	TH0 = 0x00; //relaod value
-	SET_BIT(IE,1);
-	initTimer();
-	//SET_BIT(TCON,4);
-	
+		TMOD = 0x01;       //Timer0 mode 1 
+    TH0 = 0X4B;        //Load the timer value
+    TL0 = 0XFD;
+    TR0 = 1;           //turn ON Timer zero
+    ET0 = 1;           //Enable TImer0 Interrupt
+    EA = 1; 
+   
 	
 
 	while(1)
 	{
-		if(count >= 50)
-		{
-			motor_rotate(2,2,1);      // Toggle the LED pin 
-			count = 0;
-		}
-		/*
-		checkPresed();		
-		step =0;
-		presed = keypad_press(1);
-		append(keypadvalues,sizeof(keypadvalues),presed);
-		// printf("chArray (after append) : %s\n", keypadvalues);
-	//	qsort(keypadvalues, 5, sizeof(char), cmpfunc);
-		
 
-		if(presed != NOTPRESSED)
-		{
-			for(step=0;step<5;step++)
+		checkPresed();
+		for(step=0;step<8;step++)
 			{
-			seven_seg_write(0,keypadvalues[step],0);
-			}
-			/*
-			motor_rotate(2,2,1);
-			sevensegmentValue = presed;
-			while(sevensegmentValue != -1)
-			{
-				
-				if(step!=sevensegmentValue)
+				if (buttonPresedFlags[step] == 1) 
 				{
-				seven_seg_write(0,arr[step],0);
-				step++;
+					buttonFlagPresed = 1;
 				}
-				else{
-				break;
-				}
-				motor_rotate(2,0,0);
-				
-				sevensegmentValue--;
-			*/
 			}
+		while(buttonFlagPresed)
+	{
 		
+			if(buttonPresedFlags[0]==1 )	
+				{
+					if (sevensegmentValue == 0)
+						{
+							if(	down && buttonPresedFlags[1])
+								{
+								  open();
+									buttonPresedFlags[4] = 0;
+									down = false ;
+								}
+							else if ( !up && !down )
+								{
+									open();
+								}
+						}
+					else
+						{
+							elevator = 0;
+						}
+				}
+			
+			if(buttonPresedFlags[1]==1)	
+				{
+					if (sevensegmentValue == 3)
+						{
 
+							if (up && buttonPresedFlags[1])
+								{	
+									open();
+									buttonPresedFlags[3] = 0;
+									up = false;
+								}
+							else if ( !up && !down )
+								{
+									open();
+								}
+						}
+					else
+						{
+							elevator = 3;
+						}
+				}
+				
+			if(buttonPresedFlags[5]==1 || buttonPresedFlags[6]==1)	
+				{
+					if (sevensegmentValue == 2)
+						{
+							if(	down && buttonPresedFlags[5])
+								{
+									elevSTOP();
+									open();
+									buttonPresedFlags[5] = 0;
+									down = false;
+									
+								}
+							else if (up && buttonPresedFlags[6])
+								{	
+									elevSTOP();
+									open();
+									buttonPresedFlags[6] = 0;
+									up = false;
+									
+								}
+							else if ( !up && !down )
+								{
+										open();
+									
+								}
+						}
+					else
+						{
+							elevator = 2;
+						}
+				}
+		
+		
+			if(buttonPresedFlags[3]==1 || buttonPresedFlags[4]==1)	
+				{
+					if (sevensegmentValue == 1)
+						{
+							if(	down && buttonPresedFlags[4])
+								{
+									
+									open();
+									buttonPresedFlags[4] = 0;
+									down = false;
+									
+								}
+							else if (up && buttonPresedFlags[3])
+								{	
+									open();
+									buttonPresedFlags[3] = 0;
+									up = false;
+								}
+							else if ( !up && !down )
+								{
+									open();
+								}
+						}
+					else
+						{
+							elevator = 1;
+						}
+				}
+				checkPresed();
+			if(sevensegmentValue < elevator)
+				{
+					elevUP();
+					up = true;
+					checkPresed();
+				}
+			else if(sevensegmentValue > elevator)
+				{
+					elecvDOWN();
+					down = true;
+					checkPresed();
+				}
+
+				
+				
+			
+		
+			if(count >= 50 && up)
+			{
+				sevensegmentValue++;
+				seven_seg_write(0,sevensegmentValue,0);
+				count = 0;
+			}
+		if(count >= 50 && down)
+			{
+				sevensegmentValue--;
+				seven_seg_write(0,sevensegmentValue,0);
+				count = 0;
+			}
+
+			
+	}
+			
+			
 }
+	}			
+void elevUP(void)
+{
+	SET_BIT(P2,0);
+					CLR_BIT(P2,1);
+}
+void elecvDOWN(void)
+{
+CLR_BIT(P2,0);
+					SET_BIT(P2,1);
+}
+void elevSTOP(void)
+{
+	CLR_BIT(P2,0);
+					CLR_BIT(P2,1);
+}
+void open(void)
+{
+SET_BIT(P2,4);
+CLR_BIT(P2,5);
+}	
+void close(void)
+{
+CLR_BIT(P2,4);
+SET_BIT(P2,5);
+}	
+void stop(void)
+{
+CLR_BIT(P2,5);
+	CLR_BIT(P2,4);
+}
+	
+
 
 void checkPresed(void)
 	{
@@ -142,36 +273,4 @@ void checkPresed(void)
 			}
 		}
 	}
-	
-	void append(char *ar, char size, char ch) {
-    char index = 0;
-    // Get to the end of the string
-    while (*ar) {
-        ar++;
-        ++index;
-    }
- 
-    // If sufficient space, append
-    // Otherwise, do nothing
-    //
-    if (index < size-1) {
-        *ar = ch;
-        *(ar+1) = '\0';
-    }
-}
-	
-int cmpfunc (const void * a, const void * b) {
-   return ( *(int*)a - *(int*)b );
-}
-
-	/*
-		for(step=0;step<8;step++)
-		{
-			if(buttonPresedFlags[step]==1)
-			{
-				DIO_write(2,step,0);
-				delay_ms(1);
-			}
-		}
-		*/
 		

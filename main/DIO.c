@@ -149,30 +149,6 @@ void DIO_setInput(unsigned char portname,unsigned char pinnumber,unsigned char d
 }
 
 
-void DIO_toggle(unsigned char portname,unsigned char pinnumber)
-{
-	switch(portname)
-	{
-		case 0:
-			TOG_BIT(P0,pinnumber);//Toggle the value of the given pin in port A
-			break;
-		
-		case 1:
-			TOG_BIT(P1,pinnumber);//Toggle the value of the given pin in port B
-			break;
-		
-		case 2:
-			TOG_BIT(P2,pinnumber);//Toggle the value of the given pin in port C
-			break;
-		
-		case 3:
-			TOG_BIT(P3,pinnumber);//Toggle the value of the given pin in port D
-			break;
-		
-		default: break;
-	}
-}
-
 unsigned char DIO_read(unsigned char portname,unsigned char pinnumber)
 {
 	unsigned char return_value=0;
@@ -200,103 +176,7 @@ unsigned char DIO_read(unsigned char portname,unsigned char pinnumber)
 }
 
 
-void DIO_setPort_OutPutMode(unsigned char portname,unsigned char direction)
-{
-	switch(portname)
-	{
-		case 0:
-		if(direction==1)
-		{
-			P0MDOUT |= 0xff;//Set the output mode of port0 to Push-Pull mode
-		}
-		else
-		{
-			P0MDOUT &= 0x00;//Set the output mode of port0 to Open-Drain mode
-		}
-		break;
-		case 1:
-		if(direction==1)
-		{
-			P1MDOUT |= 0xff;//Set the output mode of port1 to Push-Pull mode
-		}
-		else
-		{
-			P1MDOUT &= 0x00;//Set the output mode of port1 to Open-Drain mode
-		}
-		break;
-		case 2:
-		if(direction==1)
-		{
-			P2MDOUT |= 0xff;//Set the output mode of port2 to Push-Pull mode
-		}
-		else
-		{
-			P2MDOUT &= 0x00;//Set the output mode of port2 to Open-Drain mode
-		}
-		break;
-		case 3:
-		if(direction==1)
-		{
-			P3MDOUT |= 0xff;//Set the output mode of port3 to Push-Pull mode
-		}
-		else
-		{
-			P3MDOUT &= 0x00;//Set the output mode of port3 to Open-Drain mode
-		}
-		break;
-		default: 
-		break;
-	}
-	
-}
 
-void DIO_write_port(unsigned char portname,unsigned char portvalue)
-{
-	switch(portname)
-	{
-		case 0 :
-			P0 = portvalue; //Write the given value to the port A
-			break ;
-		
-		case 1:
-			P1 = portvalue; //Write the given value to the port B
-			break ;
-		
-		case 2 :
-			P2 = portvalue; //Write the given value to the port C
-			break ;
-		
-		case 3:
-			P3 = portvalue; //Write the given value to the port D
-			break ;
-		
-		default:
-		 break ;
-	}
-}
-
-unsigned char DIO_read_port(unsigned char portname)
-{
-	unsigned char return_val=0;
-	switch(portname)
-	{
-		case 0 :
-		return_val=P0; // read the value of port A 
-		break ;
-		case 1:
-		return_val=P1; // read the value of port B 
-		break ;
-		case 2 :
-		return_val=P2; // read the value of port C 
-		break ;
-		case 3:
-		return_val=P3; // read the value of port D 
-		break ;
-		default:
-		break ;
-	}
-	return return_val;
-}
 
 void write_low_nibble(unsigned char portname,unsigned char value)
 {
@@ -353,36 +233,6 @@ void write_high_nibble(unsigned char portname,unsigned char value)
 }
 
 
-void DIO_setPortInput(unsigned char portname)
-{
-	switch(portname)
-		{
-		case 0:
-			// make the pin as input pin
-			DIO_setPort_OutPutMode(0,0);//Set the output mode of pinNumber of port0 to Open-Drain mode
-			DIO_write_port(0,0xff); //Set the value of the given pin in port0 as High
-			break;
-
-		case 1:	
-			// make the pin as input pin
-			DIO_setPort_OutPutMode(1,0);//Set the output mode of pinNumber of port1 to Open-Drain mode
-			DIO_write_port(1,0xff); //Set the value of the given pin in port1 as High
-			break;
-		case 2:
-			// make the pin as input pin
-			DIO_setPort_OutPutMode(2,0);//Set the output mode of pinNumber of port2 to Open-Drain mode
-			DIO_write_port(2,0xff); //Set the value of the given pin in port2 as High
-			break;
-			
-		case 3:
-			// make the pin as input pin
-			DIO_setPort_OutPutMode(3,0);//Set the output mode of pinNumber of port3 to Open-Drain mode
-			DIO_write_port(0,0xff); //Set the value of the given pin in port3 as High
-			break;
-		
-	}
-	
-}
 
 void delay_ms(unsigned int k)
 {
@@ -390,43 +240,5 @@ void delay_ms(unsigned int k)
      for(i=0;i<=k;i++)
 	    for(j=0;j<110;j++);
 }
-void interrupt_enable(void)
-{
-		SET_BIT(IE,7);
-}
-
-void interrupt_0Enable(void)
-{
-	SET_BIT(IE,0);
-	SET_BIT(TCON,0);
-}
-void interrupt_1Enable(void)
-{
-	SET_BIT(IE,2);
-	SET_BIT(TCON,2);
-}
-void initTimer(void)
-{
-	
-	TMOD = 0x01;       //Timer0 mode 1 
-    TH0 = 0X4B;        //Load the timer value
-    TL0 = 0XFD;
-    TR0 = 1;           //turn ON Timer zero
-    ET0 = 1;           //Enable TImer0 Interrupt
-    EA = 1;            //Enable Global Interrupt 
-	
-	/*
-  CLR_BIT(CKCON,3); // 
-	//set the timer mode 
-	SET_BIT(TMOD,1);
-	CLR_BIT(TMOD,0);
-	TL0 = 0x0F; // start value
-	TH0 = 0x00; //relaod value
-	SET_BIT(IE,1);
-	*/
-	
-}
-	
-
 
 
