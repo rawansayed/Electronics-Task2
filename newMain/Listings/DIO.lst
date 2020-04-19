@@ -1,0 +1,276 @@
+C51 COMPILER V9.60.0.0   DIO                                                               04/19/2020 08:29:17 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DIO
+OBJECT MODULE PLACED IN .\Objects\DIO.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE DIO.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\DIO.l
+                    -st) TABS(2) OBJECT(.\Objects\DIO.obj)
+
+line level    source
+
+   1          
+   2          
+   3          #include <c8051f020.h>
+   4          #include "std_macros.h"
+   5          
+   6          
+   7          
+   8          void DIO_setPin_OutPutMode(unsigned char portname,unsigned char pinnumber,unsigned char direction)
+   9          {
+  10   1          switch(portname)
+  11   1        {
+  12   2            case 0:
+  13   2            if(direction==1)
+  14   2            {
+  15   3              SET_BIT(P0MDOUT,pinnumber);//Set the output mode of port0 to Push-Pull mode
+  16   3            }
+  17   2            else
+  18   2            {
+  19   3              CLR_BIT(P0MDOUT,pinnumber);//Set the output mode of port0 to Open-Drain mode
+  20   3            }
+  21   2            break;
+  22   2      
+  23   2          case 1:
+  24   2            if(direction==1)
+  25   2            {
+  26   3              SET_BIT(P1MDOUT,pinnumber);//Set the output mode of port0 to Push-Pull mode
+  27   3            }
+  28   2            else
+  29   2            {
+  30   3              CLR_BIT(P1MDOUT,pinnumber);//Set the output mode of port0 to Open-Drain mode
+  31   3            }
+  32   2            break;
+  33   2      
+  34   2          case 2:
+  35   2            if(direction==1)
+  36   2            {
+  37   3              SET_BIT(P2MDOUT,pinnumber);//Set the output mode of port0 to Push-Pull mode
+  38   3            }
+  39   2            else
+  40   2            {
+  41   3              CLR_BIT(P2MDOUT,pinnumber);//Set the output mode of port0 to Open-Drain mode
+  42   3            }
+  43   2            break;
+  44   2            
+  45   2          case 3:
+  46   2            if(direction==1)
+  47   2            {
+  48   3              SET_BIT(P3MDOUT,pinnumber);//Set the output mode of port0 to Push-Pull mode
+  49   3            }
+  50   2            else
+  51   2            {
+  52   3              CLR_BIT(P3MDOUT,pinnumber);//Set the output mode of port0 to Open-Drain mode
+  53   3            }
+  54   2            break;
+C51 COMPILER V9.60.0.0   DIO                                                               04/19/2020 08:29:17 PAGE 2   
+
+  55   2          default: 
+  56   2          break;
+  57   2      
+  58   2      }
+  59   1        }
+  60          
+  61          void DIO_write(unsigned char portname,unsigned char pinnumber,unsigned char outputvalue)
+  62          {
+  63   1        switch(portname)
+  64   1        {
+  65   2          case 0:
+  66   2            if(outputvalue==1)
+  67   2            {
+  68   3              SET_BIT(P0,pinnumber);//Set the value of the given pin in port0 as High
+  69   3            }
+  70   2            else
+  71   2            {
+  72   3              CLR_BIT(P0,pinnumber);//Set the value of the given pin in port0 as Low
+  73   3            }
+  74   2            break ;
+  75   2          
+  76   2          case 1:
+  77   2            if(outputvalue==1)
+  78   2            {
+  79   3              SET_BIT(P1,pinnumber);//Set the value of the given pin in port1 as High
+  80   3            }
+  81   2            else
+  82   2            {
+  83   3              CLR_BIT(P1,pinnumber);//Set the value of the given pin in port1 as Low
+  84   3            }
+  85   2            break ;
+  86   2          
+  87   2          case 2 :    
+  88   2            if(outputvalue==1)
+  89   2            {
+  90   3              SET_BIT(P2,pinnumber);//Set the value of the given pin in port2 as High
+  91   3            }
+  92   2            else
+  93   2            {
+  94   3              CLR_BIT(P2,pinnumber);//Set the value of the given pin in port2 as Low
+  95   3            }
+  96   2            break ;
+  97   2          
+  98   2          case 3:
+  99   2            if(outputvalue==1)
+ 100   2            {
+ 101   3              SET_BIT(P3,pinnumber);//Set the value of the given pin in port3 as High
+ 102   3            }
+ 103   2            else
+ 104   2            {
+ 105   3              CLR_BIT(P3,pinnumber);//Set the value of the given pin in port3 as Low
+ 106   3            }
+ 107   2            break ;
+ 108   2          default: break ;
+ 109   2        }
+ 110   1      }
+ 111          
+ 112          void DIO_setInput(unsigned char portname,unsigned char pinnumber,unsigned char direction)
+ 113          {
+ 114   1        switch(portname)
+ 115   1          {
+ 116   2          case 0:
+C51 COMPILER V9.60.0.0   DIO                                                               04/19/2020 08:29:17 PAGE 3   
+
+ 117   2            // make the pin as input pin
+ 118   2            CLR_BIT(P0MDOUT,pinnumber);//Set the output mode of pinNumber of port0 to Open-Drain mode
+ 119   2            SET_BIT(P0,pinnumber); //Set the value of the given pin in port0 as High
+ 120   2            break;
+ 121   2      
+ 122   2          case 1: 
+ 123   2            // make the pin as input pin
+ 124   2            CLR_BIT(P1MDOUT,pinnumber);//Set the output mode of pinNumber of port1 to Open-Drain mode
+ 125   2            SET_BIT(P1,pinnumber); //Set the value of the given pin in port1 as High
+ 126   2            if(direction==1)
+ 127   2            {
+ 128   3              SET_BIT(P1MDIN,pinnumber); //Pin is configured in Analog Input mode.
+ 129   3            }
+ 130   2            else
+ 131   2            {
+ 132   3               CLR_BIT(P1MDIN,pinnumber); //Pin is configured in Analog Input mode.
+ 133   3            }
+ 134   2            break;
+ 135   2          case 2:
+ 136   2            // make the pin as input pin
+ 137   2            CLR_BIT(P2MDOUT,pinnumber);//Set the output mode of pinNumber of port2 to Open-Drain mode
+ 138   2            SET_BIT(P2,pinnumber); //Set the value of the given pin in port2 as High
+ 139   2            break;
+ 140   2            
+ 141   2          case 3:
+ 142   2            // make the pin as input pin
+ 143   2            CLR_BIT(P3MDOUT,pinnumber);//Set the output mode of pinNumber of port3 to Open-Drain mode
+ 144   2            SET_BIT(P3,pinnumber); //Set the value of the given pin in port3 as High
+ 145   2            break;
+ 146   2          
+ 147   2        }
+ 148   1        
+ 149   1      }
+ 150          
+ 151          
+ 152          unsigned char DIO_read(unsigned char portname,unsigned char pinnumber)
+ 153          {
+ 154   1        unsigned char return_value=0;
+ 155   1        switch(portname)
+ 156   1        {
+ 157   2          case 0 :
+ 158   2          return_value=READ_BIT(P0,pinnumber);//Read the value from the given pin in port A
+ 159   2          break;
+ 160   2          
+ 161   2          case 1 :
+ 162   2          return_value=READ_BIT(P1,pinnumber);//Read the value from the given pin in port B
+ 163   2          break;
+ 164   2          
+ 165   2          case 2:
+ 166   2          return_value=READ_BIT(P2,pinnumber);//Read the value from the given pin in port C
+ 167   2          break;
+ 168   2          
+ 169   2          case 3 :
+ 170   2          return_value=READ_BIT(P3,pinnumber);//Read the value from the given pin in port D
+ 171   2          break;
+ 172   2          default: 
+ 173   2          break;
+ 174   2        }
+ 175   1        return return_value ;
+ 176   1      }
+ 177          
+ 178          
+C51 COMPILER V9.60.0.0   DIO                                                               04/19/2020 08:29:17 PAGE 4   
+
+ 179          
+ 180          
+ 181          void write_low_nibble(unsigned char portname,unsigned char value)
+ 182          {
+ 183   1        value&=0x0f;
+ 184   1        switch(portname)
+ 185   1        {
+ 186   2          case 0:
+ 187   2          P0 &=0xf0;
+ 188   2          P0|=value;
+ 189   2          break;
+ 190   2          
+ 191   2          case 1:
+ 192   2          P1 &=0xf0;
+ 193   2          P1|=value;
+ 194   2          break;
+ 195   2          
+ 196   2          case 2:
+ 197   2          P2 &=0xf0;
+ 198   2          P2 |=value;
+ 199   2          break;
+ 200   2          
+ 201   2          case 3:
+ 202   2          P3 &=0xf0;
+ 203   2          P3 |=value;
+ 204   2          break;
+ 205   2        }
+ 206   1      }
+ 207          
+ 208          void write_high_nibble(unsigned char portname,unsigned char value)
+ 209          {
+ 210   1        value<<=4;
+ 211   1        switch(portname)
+ 212   1        {
+ 213   2          case 0:
+ 214   2          P0 &=0x0f;
+ 215   2          P0 |=value;
+ 216   2          break;
+ 217   2          
+ 218   2          case 1:
+ 219   2          P1 &=0x0f;
+ 220   2          P1 |=value;
+ 221   2          break;
+ 222   2          
+ 223   2          case 2:
+ 224   2          P2 &=0x0f;
+ 225   2          P2 |=value;
+ 226   2          break;
+ 227   2          
+ 228   2          case 3:
+ 229   2          P3 &=0x0f;
+ 230   2          P3 |=value;
+ 231   2          break;
+ 232   2        }
+ 233   1      }
+ 234          
+ 235          
+ 236          
+ 237          void delay_ms(unsigned int k)
+ 238          {
+ 239   1        unsigned int i,j;
+ 240   1           for(i=0;i<=k;i++)
+C51 COMPILER V9.60.0.0   DIO                                                               04/19/2020 08:29:17 PAGE 5   
+
+ 241   1            for(j=0;j<110;j++);
+ 242   1      }
+ 243          
+ 244          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    725    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

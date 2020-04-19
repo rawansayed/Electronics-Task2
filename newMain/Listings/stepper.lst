@@ -1,0 +1,90 @@
+C51 COMPILER V9.60.0.0   STEPPER                                                           04/19/2020 08:29:19 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE STEPPER
+OBJECT MODULE PLACED IN .\Objects\stepper.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE stepper.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\s
+                    -tepper.lst) TABS(2) OBJECT(.\Objects\stepper.obj)
+
+line level    source
+
+   1          #include <c8051f020.h>
+   2          #include <DIO.h>
+   3          
+   4          signed char i = 0;
+   5          signed char g = 3;
+   6          unsigned char rot_angle[] = {0x06,0x03,0x09,0x0C};
+   7          
+   8          void motor_init(unsigned char portname , unsigned char setPosition)
+   9          {
+  10   1        if (setPosition == 0 )
+  11   1        {
+  12   2        DIO_setPin_OutPutMode(portname,0,1);
+  13   2        DIO_setPin_OutPutMode(portname,1,1);
+  14   2        DIO_setPin_OutPutMode(portname,2,1);
+  15   2        DIO_setPin_OutPutMode(portname,3,1);
+  16   2        }
+  17   1        else
+  18   1        {
+  19   2        DIO_setPin_OutPutMode(portname,4,1);
+  20   2        DIO_setPin_OutPutMode(portname,5,1);
+  21   2        DIO_setPin_OutPutMode(portname,6,1);
+  22   2        DIO_setPin_OutPutMode(portname,7,1);
+  23   2        }
+  24   1      }
+  25          
+  26          void motor_rotate(unsigned char portname , unsigned char setPosition,unsigned char direction)
+  27            {
+  28   1          if(setPosition==0)
+  29   1          {
+  30   2            if(direction ==0)
+  31   2              {
+  32   3                  
+  33   3                write_low_nibble(portname,rot_angle[i]);
+  34   3                i++;
+  35   3                if (i == 3)
+  36   3                  i =0;
+  37   3              }
+  38   2            else
+  39   2            {
+  40   3                
+  41   3              write_low_nibble(portname,rot_angle[g]);
+  42   3              g--;
+  43   3              if (g == 0)
+  44   3                  g = 3;
+  45   3            }
+  46   2          }
+  47   1          else
+  48   1          {
+  49   2            if(direction ==0)
+  50   2            {
+  51   3              write_high_nibble(portname,rot_angle[i]);
+  52   3              i++;
+  53   3              if (i == 3)
+  54   3                  i =0;
+C51 COMPILER V9.60.0.0   STEPPER                                                           04/19/2020 08:29:19 PAGE 2   
+
+  55   3            }
+  56   2            else
+  57   2            {
+  58   3              write_high_nibble(portname,rot_angle[g]);
+  59   3              g--;
+  60   3              if (g == 0)
+  61   3                  g = 3;
+  62   3            }
+  63   2          }
+  64   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    195    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
