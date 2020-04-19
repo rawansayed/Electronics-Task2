@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   STEPPER                                                           04/19/2020 08:29:19 PAGE 1   
+C51 COMPILER V9.60.0.0   STEPPER                                                           04/19/2020 22:22:16 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE STEPPER
@@ -13,7 +13,7 @@ line level    source
    3          
    4          signed char i = 0;
    5          signed char g = 3;
-   6          unsigned char rot_angle[] = {0x06,0x03,0x09,0x0C};
+   6          unsigned char rot_angle[] = {0x03,0x06,0x0C,0x09};
    7          
    8          void motor_init(unsigned char portname , unsigned char setPosition)
    9          {
@@ -42,7 +42,7 @@ line level    source
   32   3                  
   33   3                write_low_nibble(portname,rot_angle[i]);
   34   3                i++;
-  35   3                if (i == 3)
+  35   3                if (i == 2)
   36   3                  i =0;
   37   3              }
   38   2            else
@@ -58,26 +58,30 @@ line level    source
   48   1          {
   49   2            if(direction ==0)
   50   2            {
-  51   3              write_high_nibble(portname,rot_angle[i]);
-  52   3              i++;
-  53   3              if (i == 3)
-  54   3                  i =0;
-C51 COMPILER V9.60.0.0   STEPPER                                                           04/19/2020 08:29:19 PAGE 2   
+  51   3              for(i=0;i<=3;i++)
+  52   3              {
+  53   4              write_high_nibble(portname,rot_angle[i]);
+  54   4                delay_ms(200);
+C51 COMPILER V9.60.0.0   STEPPER                                                           04/19/2020 22:22:16 PAGE 2   
 
-  55   3            }
-  56   2            else
-  57   2            {
-  58   3              write_high_nibble(portname,rot_angle[g]);
-  59   3              g--;
-  60   3              if (g == 0)
-  61   3                  g = 3;
-  62   3            }
-  63   2          }
-  64   1      }
+  55   4              }
+  56   3            }
+  57   2            else
+  58   2            {
+  59   3              for(g=3;g>=0;g--)
+  60   3              {
+  61   4              write_high_nibble(portname,rot_angle[g]);
+  62   4                delay_ms(200);
+  63   4              }
+  64   3              
+  65   3              
+  66   3            }
+  67   2          }
+  68   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    195    ----
+   CODE SIZE        =    221    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

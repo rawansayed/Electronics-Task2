@@ -14,9 +14,12 @@ void checkPresed(void);
 void elevUP(void);
 void elecvDOWN(void);
 void elevSTOP(void);
-unsigned char presed,step,buttonFlagPresed,opencounter;
+unsigned char presed,step,buttonFlagPresed;
 char sevensegmentValue,elevator;
-
+char opencounter=0;
+char upvalue = 0;
+char downvalue = 0;
+char wait;
 char open = false;
 char close = false;
 char up = false;
@@ -27,7 +30,7 @@ char keypadFlags[5] = {0,1,2,3,4};
 char keypadvalues[5] = {0};
 char arr[4] = {0,1,2,3}; // sevenSegments number
 
-
+sbit led = P0^0;
 volatile char count = 0;
 volatile char count2 = 0;
 /*
@@ -38,6 +41,12 @@ void ext_int_0() interrupt 0
 */
 
 
+void timer1_isr() interrupt 3
+{
+	TH1 = 0X4B;        //Load the timer value
+    TL1 = 0XFD;
+	wait++;
+}
 void timer0_isr() interrupt 1
 {
 	TH0 = 0X4B;        //ReLoad the timer value
@@ -63,10 +72,15 @@ void main (void)
 	P3 = 0xff;
 	
 		TMOD = 0x01;       //Timer0 mode 1 
+		SET_BIT(TMOD,4);
+		TH1 = 0X4B;        //Load the timer value
+    TL1 = 0XFD;
     TH0 = 0X4B;        //Load the timer value
     TL0 = 0XFD;
     TR0 = 1;           //turn ON Timer zero
+		TR1 = 1;
     ET0 = 1;           //Enable TImer0 Interrupt
+		
     EA = 1; 
    
 	 DIO_setPin_OutPutMode(2,0,1);
@@ -91,13 +105,13 @@ void main (void)
 				{
 					if (sevensegmentValue == 0)
 						{
-							if(	down && buttonPresedFlags[1])
+							if(	down && buttonPresedFlags[0])
 								{
 								  open = true;
-									buttonPresedFlags[4] = 0;
+									buttonPresedFlags[0] = 0;
 									down = false ;
 								}
-							else if ( !up && !down )
+							else
 								{
 									open=true;
 								}
@@ -116,10 +130,10 @@ void main (void)
 							if (up && buttonPresedFlags[1])
 								{	
 									open=true;
-									buttonPresedFlags[3] = 0;
+									buttonPresedFlags[1] = 0;
 									up = false;
 								}
-							else if ( !up && !down )
+							else if (!up)
 								{
 									open=true;
 								}
@@ -134,27 +148,25 @@ void main (void)
 				{
 					if (sevensegmentValue == 2)
 						{
-							if(	down && buttonPresedFlags[5])
+							if(	down && buttonPresedFlags[6])
 								{
 									
 									open = true;				
-									buttonPresedFlags[5] = 0;
+									buttonPresedFlags[6] = 0;
 									down = false;
 									
 								}
-							else if (up && buttonPresedFlags[6])
+							else if (up && buttonPresedFlags[5])
 								{	
 									open = true;
-									buttonPresedFlags[6] = 0;
+									buttonPresedFlags[5] = 0;
 									up = false;
-									
-									
 								}
-							else if ( !up && !down )
-								{
-										open = true;
-									
-								}
+							else
+							{
+								open = true;
+							}
+							
 						}
 					else
 						{
@@ -169,7 +181,6 @@ void main (void)
 						{
 							if(	down && buttonPresedFlags[4])
 								{
-									
 									open=true;
 									buttonPresedFlags[4] = 0;
 									down = false;
@@ -194,13 +205,11 @@ void main (void)
 				checkPresed();
 			if(sevensegmentValue < elevator)
 				{
-					elevUP();
 					up = true;
 					checkPresed();
 				}
 			else if(sevensegmentValue > elevator)
 				{
-					elecvDOWN();
 					down = true;
 					checkPresed();
 				}
@@ -210,54 +219,58 @@ void main (void)
 				down = false;
 			}
 
-				
-				
+		if(open)
+			{		
+				motor_rotate(2,1,0);
+				open=false;
+				ET1= 1;
+			}
+			if(close)
+			{
+				motor_rotate(2,1,1);
+				close = false;
+			}
+			if(wait >= 40)
+			{
+				close = true;
+				ET1= 0;
+				wait = 0;
+			}
+		if(count >= 30 && up)
+			{
+				if(upvalue >= 3)
+					{
+						sevensegmentValue++;
+						seven_seg_write(0,sevensegmentValue,0);
+						upvalue = 0;
+					}
+					upvalue++;
+					motor_rotate(2,0,0);
+						count =0;		
+			}
 			
+		if(count >= 30 && down)
+			{
+				if(downvalue >= 3)
+					{
+						sevensegmentValue--;
+						seven_seg_write(0,sevensegmentValue,0);
+						downvalue = 0;
+					}
+					downvalue++;
+					motor_rotate(2,0,1);
+					count =0;
+			}
 		
-		if(count >= 50 && up)
-			{
-				sevensegmentValue++;
-				seven_seg_write(0,sevensegmentValue,0);
-				count = 0;
-			}
-		if(count >= 50 && down)
-			{
-				sevensegmentValue--;
-				seven_seg_write(0,sevensegmentValue,0);
-				count = 0;
-			}
-		if(count2 >= 30 && open)
-			{
-				motor_rotate(2,1,0);
-				opencounter++;
-				if(opencounter>=2)
-				{
-					opencounter =0;
-					open = false;
-				}
-				
-				count2 =0;
-				
-			}
-		if(count2 >= 30 && close)
-			{
-				
-				motor_rotate(2,1,0);
-				count2 =0;
-				opencounter++;
-				if(opencounter==2)
-				{
-					opencounter =0;
-					open = false;
-				}
-			}
+		
 
 			
 	}
 			
 			
 }
-	}		
+	}	
+/*
 void elevUP(void)
 {
 	if(count2 >= 30)
@@ -274,6 +287,7 @@ void elecvDOWN(void)
 		count2 =0;
 	}
 }
+*/
 /*
 void open(void)
 {

@@ -3,7 +3,7 @@
 
 signed char i = 0;
 signed char g = 3;
-unsigned char rot_angle[] = {0x06,0x03,0x09,0x0C};
+unsigned char rot_angle[] = {0x03,0x06,0x0C,0x09};
 
 void motor_init(unsigned char portname , unsigned char setPosition)
 {
@@ -32,7 +32,7 @@ void motor_rotate(unsigned char portname , unsigned char setPosition,unsigned ch
 						
 					write_low_nibble(portname,rot_angle[i]);
 					i++;
-					if (i == 3)
+					if (i == 2)
 						i =0;
 				}
 			else
@@ -48,17 +48,21 @@ void motor_rotate(unsigned char portname , unsigned char setPosition,unsigned ch
 		{
 			if(direction ==0)
 			{
+				for(i=0;i<=3;i++)
+				{
 				write_high_nibble(portname,rot_angle[i]);
-				i++;
-				if (i == 3)
-						i =0;
+					delay_ms(200);
+				}
 			}
 			else
 			{
+				for(g=3;g>=0;g--)
+				{
 				write_high_nibble(portname,rot_angle[g]);
-				g--;
-				if (g == 0)
-						g = 3;
+					delay_ms(200);
+				}
+				
+				
 			}
 		}
 }
