@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   STEPPER                                                           04/19/2020 22:22:16 PAGE 1   
+C51 COMPILER V9.60.0.0   STEPPER                                                           04/19/2020 23:49:26 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE STEPPER
@@ -39,19 +39,19 @@ line level    source
   29   1          {
   30   2            if(direction ==0)
   31   2              {
-  32   3                  
-  33   3                write_low_nibble(portname,rot_angle[i]);
-  34   3                i++;
-  35   3                if (i == 2)
-  36   3                  i =0;
+  32   3                for(i=0;i<=3;i++)
+  33   3                {
+  34   4                write_low_nibble(portname,rot_angle[i]);
+  35   4                delay_ms(100);
+  36   4                }
   37   3              }
   38   2            else
   39   2            {
-  40   3                
-  41   3              write_low_nibble(portname,rot_angle[g]);
-  42   3              g--;
-  43   3              if (g == 0)
-  44   3                  g = 3;
+  40   3              for(g=3;g>=0;g--)
+  41   3              {
+  42   4              write_low_nibble(portname,rot_angle[g]);
+  43   4                delay_ms(100);
+  44   4              }
   45   3            }
   46   2          }
   47   1          else
@@ -62,7 +62,7 @@ line level    source
   52   3              {
   53   4              write_high_nibble(portname,rot_angle[i]);
   54   4                delay_ms(200);
-C51 COMPILER V9.60.0.0   STEPPER                                                           04/19/2020 22:22:16 PAGE 2   
+C51 COMPILER V9.60.0.0   STEPPER                                                           04/19/2020 23:49:26 PAGE 2   
 
   55   4              }
   56   3            }
@@ -81,7 +81,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    221    ----
+   CODE SIZE        =    249    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

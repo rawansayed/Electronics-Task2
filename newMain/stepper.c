@@ -29,19 +29,19 @@ void motor_rotate(unsigned char portname , unsigned char setPosition,unsigned ch
 		{
 			if(direction ==0)
 				{
-						
+					for(i=0;i<=3;i++)
+					{
 					write_low_nibble(portname,rot_angle[i]);
-					i++;
-					if (i == 2)
-						i =0;
+					delay_ms(100);
+					}
 				}
 			else
 			{
-					
+				for(g=3;g>=0;g--)
+				{
 				write_low_nibble(portname,rot_angle[g]);
-				g--;
-				if (g == 0)
-						g = 3;
+					delay_ms(100);
+				}
 			}
 		}
 		else

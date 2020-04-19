@@ -46,6 +46,8 @@ void timer1_isr() interrupt 3
 	TH1 = 0X4B;        //Load the timer value
     TL1 = 0XFD;
 	wait++;
+	up = false;
+				down= false;
 }
 void timer0_isr() interrupt 1
 {
@@ -57,19 +59,19 @@ void timer0_isr() interrupt 1
 
 void main (void)
 {
-	sevensegmentValue = 0;
+	
+	
+		WDTCN = 0xDE;
+		WDTCN = 0xAD;
+		keypad_vInit(1);
+
+		seven_seg_init(0,0);
+		seven_seg_init(0,1);
+		sevensegmentValue = 0;
 		seven_seg_write(0,sevensegmentValue,0);
-	
-	WDTCN = 0xDE;
-	WDTCN = 0xAD;
-	keypad_vInit(1);
-
-	seven_seg_init(0,0);
-	seven_seg_init(0,1);
-
-	
-	P3MDOUT &= 0x00;
-	P3 = 0xff;
+		
+		P3MDOUT &= 0x00;
+		P3 = 0xff;
 	
 		TMOD = 0x01;       //Timer0 mode 1 
 		SET_BIT(TMOD,4);
@@ -83,8 +85,8 @@ void main (void)
 		
     EA = 1; 
    
-	 DIO_setPin_OutPutMode(2,0,1);
-	 DIO_setPin_OutPutMode(2,1,1);
+	 //DIO_setPin_OutPutMode(2,0,1);
+	 //DIO_setPin_OutPutMode(2,1,1);
 	
 
 	while(1)
@@ -105,76 +107,18 @@ void main (void)
 				{
 					if (sevensegmentValue == 0)
 						{
-							if(	down && buttonPresedFlags[0])
+							if(down)
 								{
-								  open = true;
-									buttonPresedFlags[0] = 0;
 									down = false ;
 								}
-							else
-								{
 									open=true;
-								}
+									buttonPresedFlags[0] = 0;
 						}
 					else
 						{
 							elevator = 0;
 						}
 				}
-			
-			if(buttonPresedFlags[1]==1)	
-				{
-					if (sevensegmentValue == 3)
-						{
-
-							if (up && buttonPresedFlags[1])
-								{	
-									open=true;
-									buttonPresedFlags[1] = 0;
-									up = false;
-								}
-							else if (!up)
-								{
-									open=true;
-								}
-						}
-					else
-						{
-							elevator = 3;
-						}
-				}
-				
-			if(buttonPresedFlags[5]==1 || buttonPresedFlags[6]==1)	
-				{
-					if (sevensegmentValue == 2)
-						{
-							if(	down && buttonPresedFlags[6])
-								{
-									
-									open = true;				
-									buttonPresedFlags[6] = 0;
-									down = false;
-									
-								}
-							else if (up && buttonPresedFlags[5])
-								{	
-									open = true;
-									buttonPresedFlags[5] = 0;
-									up = false;
-								}
-							else
-							{
-								open = true;
-							}
-							
-						}
-					else
-						{
-							elevator = 2;
-						}
-				}
-		
-		
 			if(buttonPresedFlags[3]==1 || buttonPresedFlags[4]==1)	
 				{
 					if (sevensegmentValue == 1)
@@ -202,41 +146,89 @@ void main (void)
 							elevator = 1;
 						}
 				}
+				if(buttonPresedFlags[5]==1 || buttonPresedFlags[6]==1)	
+				{
+					if (sevensegmentValue == 2)
+						{
+							if(	down && buttonPresedFlags[6])
+								{						
+									buttonPresedFlags[6] = 0;
+									down = false;
+									open = true;	
+									
+								}
+							else if (up && buttonPresedFlags[5])
+								{	
+									buttonPresedFlags[5] = 0;
+									open = true;
+									up = false;
+								}
+							else
+							{
+								open = true;
+							}
+						}
+					else
+						{
+							elevator = 2;
+						}
+				}
+				if(buttonPresedFlags[1]==1)	
+				{
+					if (sevensegmentValue == 3)
+						{
+							if (up)
+								{	
+									up = false;
+								}
+								open=true;
+								buttonPresedFlags[1] = 0;
+						}
+					else
+						{
+							elevator = 3;
+						}
+				}
 				checkPresed();
 			if(sevensegmentValue < elevator)
 				{
 					up = true;
-					checkPresed();
 				}
 			else if(sevensegmentValue > elevator)
 				{
 					down = true;
-					checkPresed();
 				}
 			else
 			{
 				up = false;
 				down = false;
 			}
-
-		if(open)
+		
+			
+				if(open)
 			{		
 				motor_rotate(2,1,0);
 				open=false;
+				up = false;
+				down= false;
 				ET1= 1;
 			}
 			if(close)
 			{
 				motor_rotate(2,1,1);
 				close = false;
+				up = false;
+				down= false;
 			}
 			if(wait >= 40)
 			{
 				close = true;
 				ET1= 0;
 				wait = 0;
-			}
-		if(count >= 30 && up)
+				up = false;
+				down= false;
+			}		
+		if(count >= 20 && up)
 			{
 				if(upvalue >= 3)
 					{
@@ -249,7 +241,7 @@ void main (void)
 						count =0;		
 			}
 			
-		if(count >= 30 && down)
+		if(count >= 20 && down)
 			{
 				if(downvalue >= 3)
 					{
@@ -261,13 +253,9 @@ void main (void)
 					motor_rotate(2,0,1);
 					count =0;
 			}
-		
-		
 
-			
 	}
-			
-			
+		
 }
 	}	
 /*
@@ -343,7 +331,6 @@ void stop(void)
 CLR_BIT(P2,5);
 	CLR_BIT(P2,4);
 }
-	
 */
 
 void checkPresed(void)
