@@ -254,6 +254,7 @@ void main (void)
 				if(entering >4)
 				{
 					SET_BIT(P3,7);
+					wait=0;
 				}
 				else
 				{
