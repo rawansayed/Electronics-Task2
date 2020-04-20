@@ -77,5 +77,7 @@ void interrupt_0Enable(void);
 void interrupt_1Enable(void);
 void initTimer0(void);
 void initTimer1(void);
+char getMin(int arr[], int n);
+char getMax(int arr[], int n);
 #endif
 

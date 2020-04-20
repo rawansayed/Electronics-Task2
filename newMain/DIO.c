@@ -240,5 +240,27 @@ void delay_ms(unsigned int k)
      for(i=0;i<=k;i++)
 	    for(j=0;j<110;j++);
 }
-
-
+char getMax(int arr[], int n) 
+{ 
+int max;	 
+char i; 
+for (i = 2; i<n; i++) 
+{ 
+	if (arr[i] > max)	 
+		max = arr[i];  
+} 
+	
+return max; 
+} 
+char getMin(int arr[], int n) 
+{ 
+int min = arr[0];
+char i; 
+for (i = 0; i<n; i++) 
+{ 
+	if (arr[i] < min)	 
+		min = arr[i]; 
+} 
+	
+return min; 
+}

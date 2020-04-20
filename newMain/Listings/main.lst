@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   MAIN                                                              04/19/2020 23:49:26 PAGE 1   
+C51 COMPILER V9.60.0.0   MAIN                                                              04/20/2020 05:36:08 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
@@ -18,365 +18,345 @@ line level    source
    8          #define true 1
    9          #define false 0
   10          
-  11          void checkPresed(void);
-  12          
+  11          //void checkPresed(void);
+  12          //void keypadPresed(void);
   13          
-  14          void elevUP(void);
-  15          void elecvDOWN(void);
-  16          void elevSTOP(void);
-  17          unsigned char presed,step,buttonFlagPresed;
-  18          char sevensegmentValue,elevator;
-  19          char opencounter=0;
-  20          char upvalue = 0;
-  21          char downvalue = 0;
-  22          char wait;
-  23          char open = false;
-  24          char close = false;
-  25          char up = false;
-  26          char down = false;
+  14          unsigned char presed,step,buttonFlagPresed;
+  15          char sevensegmentValue,elevator;
+  16          char opencounter=0;
+  17          char upvalue = 0;
+  18          char downvalue = 0;
+  19          
+  20          char doorclose=true;
+  21          char open = false;
+  22          char close = false;
+  23          char up = false;
+  24          char down = false;
+  25          char enter = false;
+  26          char entering=0;
   27          char buttonPresed[8] = {1,1,1,1,1,1,1,1};
   28          char buttonPresedFlags[8] = {0,0,0,0,0,0,0,0};
-  29          char keypadFlags[5] = {0,1,2,3,4};
+  29          char keypadFlags[11] = {0,0,0,0,0,0,0,0,0,0,0};
   30          char keypadvalues[5] = {0};
-  31          char arr[4] = {0,1,2,3}; // sevenSegments number
+  31          char floors[4] = {0,0,0,0}; // sevenSegments number
   32          
   33          sbit led = P0^0;
   34          volatile char count = 0;
   35          volatile char count2 = 0;
-  36          /*
-  37          void ext_int_0() interrupt 0
-  38          { 
-  39              count = 0;
-  40          }
-  41          */
-  42          
-  43          
-  44          void timer1_isr() interrupt 3
-  45          {
-  46   1        TH1 = 0X4B;        //Load the timer value
-  47   1          TL1 = 0XFD;
-  48   1        wait++;
-  49   1        up = false;
-  50   1              down= false;
-  51   1      }
-  52          void timer0_isr() interrupt 1
-  53          {
-  54   1        TH0 = 0X4B;        //ReLoad the timer value
-C51 COMPILER V9.60.0.0   MAIN                                                              04/19/2020 23:49:26 PAGE 2   
+  36          volatile char wait = 0;
+  37          
+  38          void ext_int_0() interrupt 0
+  39          { 
+  40   1          wait = 0;
+  41   1      }
+  42          void timer1_isr() interrupt 3
+  43          {
+  44   1        TH1 = 0X4B;        //Load the timer value
+  45   1          TL1 = 0XFD;
+  46   1        wait++;
+  47   1      }
+  48          void timer0_isr() interrupt 1
+  49          {
+  50   1        TH0 = 0X4B;        //ReLoad the timer value
+  51   1          TL0 = 0XFD;
+  52   1          count++;        // Toggle the LED pin 
+  53   1          count2++;
+  54   1      }
+C51 COMPILER V9.60.0.0   MAIN                                                              04/20/2020 05:36:08 PAGE 2   
 
-  55   1          TL0 = 0XFD;
-  56   1          count++;        // Toggle the LED pin 
-  57   1          count2++;
-  58   1      }
-  59          
-  60          void main (void)
-  61          {
-  62   1        
-  63   1        
-  64   1          WDTCN = 0xDE;
-  65   1          WDTCN = 0xAD;
-  66   1          keypad_vInit(1);
-  67   1      
-  68   1          seven_seg_init(0,0);
-  69   1          seven_seg_init(0,1);
-  70   1          sevensegmentValue = 0;
-  71   1          seven_seg_write(0,sevensegmentValue,0);
-  72   1          
-  73   1          P3MDOUT &= 0x00;
-  74   1          P3 = 0xff;
-  75   1        
-  76   1          TMOD = 0x01;       //Timer0 mode 1 
-  77   1          SET_BIT(TMOD,4);
-  78   1          TH1 = 0X4B;        //Load the timer value
-  79   1          TL1 = 0XFD;
-  80   1          TH0 = 0X4B;        //Load the timer value
-  81   1          TL0 = 0XFD;
-  82   1          TR0 = 1;           //turn ON Timer zero
-  83   1          TR1 = 1;
-  84   1          ET0 = 1;           //Enable TImer0 Interrupt
-  85   1          
-  86   1          EA = 1; 
-  87   1         
-  88   1         //DIO_setPin_OutPutMode(2,0,1);
-  89   1         //DIO_setPin_OutPutMode(2,1,1);
-  90   1        
-  91   1      
-  92   1        while(1)
-  93   1        {
-  94   2      
-  95   2          checkPresed();
-  96   2          for(step=0;step<8;step++)
-  97   2            {
-  98   3              if (buttonPresedFlags[step] == 1) 
-  99   3              {
- 100   4                buttonFlagPresed = 1;
- 101   4              }
- 102   3            }
- 103   2          while(buttonFlagPresed)
- 104   2        {
- 105   3          
- 106   3            if(buttonPresedFlags[0]==1 )  
- 107   3              {
- 108   4                if (sevensegmentValue == 0)
- 109   4                  {
- 110   5                    if(down)
- 111   5                      {
- 112   6                        down = false ;
- 113   6                      }
- 114   5                        open=true;
- 115   5                        buttonPresedFlags[0] = 0;
- 116   5                  }
-C51 COMPILER V9.60.0.0   MAIN                                                              04/19/2020 23:49:26 PAGE 3   
+  55          void keypadPresed(void)
+  56          { 
+  57   1        presed = keypad_press(1);
+  58   1        keypadFlags[presed]=1;
+  59   1      
+  60   1      }
+  61          void checkPresed(void)
+  62            {
+  63   1          for(step=0;step<8;step++)
+  64   1          {
+  65   2            buttonPresed[step]=DIO_read(3,step);
+  66   2            delay_ms(1);
+  67   2          }
+  68   1          for(step=0;step<8;step++)
+  69   1          {
+  70   2            if(0 == buttonPresed[step])
+  71   2            {
+  72   3              buttonPresedFlags[step] = 1;
+  73   3            }
+  74   2          }
+  75   1        }
+  76          void main (void)
+  77          {
+  78   1        
+  79   1        
+  80   1          WDTCN = 0xDE;
+  81   1          WDTCN = 0xAD;
+  82   1          keypad_vInit(1);
+  83   1      
+  84   1          seven_seg_init(0,0);
+  85   1          seven_seg_init(0,1);
+  86   1          sevensegmentValue = 0;
+  87   1          seven_seg_write(0,sevensegmentValue,0);
+  88   1          seven_seg_write(0,entering,1);
+  89   1          
+  90   1          P3MDOUT &= 0x00;
+  91   1          P3 = 0x7f;
+  92   1          DIO_setPin_OutPutMode(3,7,1);
+  93   1        
+  94   1          TMOD = 0x01;       //Timer0 mode 1 
+  95   1          SET_BIT(TMOD,4);
+  96   1          TH1 = 0X4B;        //Load the timer value
+  97   1          TL1 = 0XFD;
+  98   1          TH0 = 0X4B;        //Load the timer value
+  99   1          TL0 = 0XFD;
+ 100   1          TR0 = 1;           //turn ON Timer zero
+ 101   1          TR1 = 1;
+ 102   1          ET0 = 1;           //Enable TImer0 Interrupt
+ 103   1          
+ 104   1          EA = 1; 
+ 105   1         
+ 106   1         //DIO_setPin_OutPutMode(2,0,1);
+ 107   1         //DIO_setPin_OutPutMode(2,1,1);
+ 108   1          SET_BIT(IE,0);
+ 109   1          SET_BIT(TCON,0);
+ 110   1        
+ 111   1      
+ 112   1        while(1)
+ 113   1        {
+ 114   2      
+ 115   2          checkPresed();
+ 116   2          for(step=0;step<8;step++)
+C51 COMPILER V9.60.0.0   MAIN                                                              04/20/2020 05:36:08 PAGE 3   
 
- 117   4                else
- 118   4                  {
- 119   5                    elevator = 0;
- 120   5                  }
+ 117   2            {
+ 118   3              if (buttonPresedFlags[step] == 1 ) 
+ 119   3              {
+ 120   4                buttonFlagPresed = 1;
  121   4              }
- 122   3            if(buttonPresedFlags[3]==1 || buttonPresedFlags[4]==1)  
- 123   3              {
- 124   4                if (sevensegmentValue == 1)
- 125   4                  {
- 126   5                    if( down && buttonPresedFlags[4])
- 127   5                      {
- 128   6                        open=true;
- 129   6                        buttonPresedFlags[4] = 0;
- 130   6                        down = false;
- 131   6                        
- 132   6                      }
- 133   5                    else if (up && buttonPresedFlags[3])
- 134   5                      { 
- 135   6                        open=true;
- 136   6                        buttonPresedFlags[3] = 0;
- 137   6                        up = false;
- 138   6                      }
- 139   5                    else if ( !up && !down )
- 140   5                      {
- 141   6                        open=true;
- 142   6                      }
- 143   5                  }
- 144   4                else
- 145   4                  {
- 146   5                    elevator = 1;
- 147   5                  }
- 148   4              }
- 149   3              if(buttonPresedFlags[5]==1 || buttonPresedFlags[6]==1)  
- 150   3              {
- 151   4                if (sevensegmentValue == 2)
- 152   4                  {
- 153   5                    if( down && buttonPresedFlags[6])
- 154   5                      {           
- 155   6                        buttonPresedFlags[6] = 0;
- 156   6                        down = false;
- 157   6                        open = true;  
- 158   6                        
- 159   6                      }
- 160   5                    else if (up && buttonPresedFlags[5])
- 161   5                      { 
- 162   6                        buttonPresedFlags[5] = 0;
- 163   6                        open = true;
- 164   6                        up = false;
- 165   6                      }
- 166   5                    else
- 167   5                    {
- 168   6                      open = true;
- 169   6                    }
- 170   5                  }
- 171   4                else
- 172   4                  {
- 173   5                    elevator = 2;
- 174   5                  }
- 175   4              }
- 176   3              if(buttonPresedFlags[1]==1) 
- 177   3              {
- 178   4                if (sevensegmentValue == 3)
-C51 COMPILER V9.60.0.0   MAIN                                                              04/19/2020 23:49:26 PAGE 4   
+ 122   3            }
+ 123   2            
+ 124   2          while(buttonFlagPresed)
+ 125   2        {
+ 126   3          
+ 127   3          checkPresed();
+ 128   3            if(buttonPresedFlags[0]==1 || keypadFlags[0] == 1 ) 
+ 129   3              {
+ 130   4                if (sevensegmentValue == 0)
+ 131   4                  {
+ 132   5                        open=true;
+ 133   5                        buttonPresedFlags[0] = 0;
+ 134   5                        floors[0] = 0;
+ 135   5                      keypadFlags[0] = 0;
+ 136   5                  }
+ 137   4                else
+ 138   4                  {
+ 139   5                    //elevator = 0;
+ 140   5                    floors[0] = 1;
+ 141   5                  }
+ 142   4              }
+ 143   3            if(buttonPresedFlags[3]==1 || buttonPresedFlags[4]==1 || keypadFlags[1] == 1) 
+ 144   3              {
+ 145   4                if (sevensegmentValue == 1)
+ 146   4                  {
+ 147   5                    if( down && buttonPresedFlags[4])
+ 148   5                      {
+ 149   6                        open=true;
+ 150   6                        buttonPresedFlags[4] = 0;                 
+ 151   6                      }
+ 152   5                    else if (up && buttonPresedFlags[3])
+ 153   5                      { 
+ 154   6                        open=true;
+ 155   6                        buttonPresedFlags[3] = 0;
+ 156   6                      }
+ 157   5                    else 
+ 158   5                      {
+ 159   6                        open=true;
+ 160   6                        keypadFlags[1] = 0;
+ 161   6                      }
+ 162   5                    floors[1] = 0;  
+ 163   5                  }
+ 164   4                else
+ 165   4                  {
+ 166   5                    //elevator = 1;
+ 167   5                    floors[1] = 1;
+ 168   5                  }
+ 169   4              }
+ 170   3              if(buttonPresedFlags[5]==1 || buttonPresedFlags[6]==1 || keypadFlags[2] == 1) 
+ 171   3              {
+ 172   4                if (sevensegmentValue == 2)
+ 173   4                  {
+ 174   5                    if( down && buttonPresedFlags[6])
+ 175   5                      {           
+ 176   6                        buttonPresedFlags[6] = 0;
+ 177   6                        open = true;              
+ 178   6                      }
+C51 COMPILER V9.60.0.0   MAIN                                                              04/20/2020 05:36:08 PAGE 4   
 
- 179   4                  {
- 180   5                    if (up)
- 181   5                      { 
- 182   6                        up = false;
+ 179   5                    else if (up && buttonPresedFlags[5])
+ 180   5                      { 
+ 181   6                        buttonPresedFlags[5] = 0;
+ 182   6                        open = true;
  183   6                      }
- 184   5                      open=true;
- 185   5                      buttonPresedFlags[1] = 0;
- 186   5                  }
- 187   4                else
- 188   4                  {
- 189   5                    elevator = 3;
+ 184   5                    else
+ 185   5                    {
+ 186   6                      keypadFlags[2] = 0;
+ 187   6                      open = true;
+ 188   6                    }
+ 189   5                  floors[2] = 0;  
  190   5                  }
- 191   4              }
- 192   3              checkPresed();
- 193   3            if(sevensegmentValue < elevator)
- 194   3              {
- 195   4                up = true;
+ 191   4                else
+ 192   4                  {
+ 193   5                  //  elevator = 2;
+ 194   5                    floors[2] = 1;
+ 195   5                  }
  196   4              }
- 197   3            else if(sevensegmentValue > elevator)
+ 197   3              if(buttonPresedFlags[1]==1 || keypadFlags[3] == 1)  
  198   3              {
- 199   4                down = true;
- 200   4              }
- 201   3            else
- 202   3            {
- 203   4              up = false;
- 204   4              down = false;
- 205   4            }
- 206   3          
- 207   3            
- 208   3              if(open)
- 209   3            {   
- 210   4              motor_rotate(2,1,0);
- 211   4              open=false;
- 212   4              up = false;
- 213   4              down= false;
- 214   4              ET1= 1;
- 215   4            }
- 216   3            if(close)
- 217   3            {
- 218   4              motor_rotate(2,1,1);
- 219   4              close = false;
- 220   4              up = false;
- 221   4              down= false;
- 222   4            }
- 223   3            if(wait >= 40)
- 224   3            {
- 225   4              close = true;
- 226   4              ET1= 0;
- 227   4              wait = 0;
- 228   4              up = false;
- 229   4              down= false;
- 230   4            }   
- 231   3          if(count >= 20 && up)
- 232   3            {
- 233   4              if(upvalue >= 3)
- 234   4                {
- 235   5                  sevensegmentValue++;
- 236   5                  seven_seg_write(0,sevensegmentValue,0);
- 237   5                  upvalue = 0;
- 238   5                }
- 239   4                upvalue++;
- 240   4                motor_rotate(2,0,0);
-C51 COMPILER V9.60.0.0   MAIN                                                              04/19/2020 23:49:26 PAGE 5   
+ 199   4                if (sevensegmentValue == 3)
+ 200   4                  {
+ 201   5                      open=true;
+ 202   5                      buttonPresedFlags[1] = 0;
+ 203   5                      keypadFlags[3] = 0;
+ 204   5                      floors[3] = 0;
+ 205   5                  }
+ 206   4                else
+ 207   4                  {
+ 208   5                    //elevator = 3;
+ 209   5                    floors[3] = 1;
+ 210   5                  }
+ 211   4              }
+ 212   3              
+ 213   3        
+ 214   3            keypadPresed();
+ 215   3            if(open)
+ 216   3            {   
+ 217   4              motor_rotate(2,1,0);
+ 218   4              open=false;
+ 219   4              ET1= 1;
+ 220   4              doorclose = false;
+ 221   4              up = false;
+ 222   4              down = false;
+ 223   4              enter = true;
+ 224   4            }
+ 225   3            if(close)
+ 226   3            {
+ 227   4              motor_rotate(2,1,1);
+ 228   4              close = false;
+ 229   4              doorclose = true;
+ 230   4              enter = false;
+ 231   4            }
+ 232   3            if(wait >= 80)
+ 233   3            {
+ 234   4              close = true;
+ 235   4              ET1= 0;
+ 236   4              wait = 0;
+ 237   4            }
+ 238   3            if(enter)
+ 239   3            {
+ 240   4              if(keypadFlags[10]==1)
+C51 COMPILER V9.60.0.0   MAIN                                                              04/20/2020 05:36:08 PAGE 5   
 
- 241   4                  count =0;   
- 242   4            }
- 243   3            
- 244   3          if(count >= 20 && down)
- 245   3            {
- 246   4              if(downvalue >= 3)
- 247   4                {
- 248   5                  sevensegmentValue--;
- 249   5                  seven_seg_write(0,sevensegmentValue,0);
- 250   5                  downvalue = 0;
- 251   5                }
- 252   4                downvalue++;
- 253   4                motor_rotate(2,0,1);
- 254   4                count =0;
- 255   4            }
- 256   3      
- 257   3        }
- 258   2          
- 259   2      }
- 260   1        } 
- 261          /*
- 262          void elevUP(void)
- 263          {
- 264            if(count2 >= 30)
- 265            {
- 266              motor_rotate(2,0,0);
- 267              count2 =0;
- 268            }
- 269          }
- 270          void elecvDOWN(void)
- 271          {
- 272            if(count2 >= 30)
- 273            {
- 274              motor_rotate(2,0,1);
- 275              count2 =0;
- 276            }
- 277          }
- 278          */
- 279          /*
- 280          void open(void)
- 281          {
- 282            if(count2 >= 30)
- 283            {
- 284              motor_rotate(2,1,1);
- 285              count2 =0;
- 286            }
- 287          } 
- 288          void close(void)
- 289          {
- 290            count3 = 0;
- 291            if (count3 <=50)
- 292            {
- 293              if(count2 >= 30)
- 294              {
- 295                motor_rotate(2,1,0);
- 296                count2 =0;
- 297              }
- 298            }
- 299          }
- 300          */
- 301          
- 302            
-C51 COMPILER V9.60.0.0   MAIN                                                              04/19/2020 23:49:26 PAGE 6   
+ 241   4              {
+ 242   5                delay_ms(300);
+ 243   5                entering++;
+ 244   5                seven_seg_write(0,entering,1);
+ 245   5                keypadFlags[10]=0;
+ 246   5              }
+ 247   4              if(keypadFlags[11]==1 && entering !=0)
+ 248   4              {
+ 249   5                delay_ms(300);
+ 250   5                entering--;
+ 251   5                seven_seg_write(0,entering,1);
+ 252   5                keypadFlags[11]=0;
+ 253   5              }
+ 254   4              if(entering >4)
+ 255   4              {
+ 256   5                SET_BIT(P3,7);
+ 257   5              }
+ 258   4              else
+ 259   4              {
+ 260   5                CLR_BIT(P3,7);
+ 261   5              }
+ 262   4                
+ 263   4            }
+ 264   3      
+ 265   3      
+ 266   3      
+ 267   3          for(step=0;step<=3;step++)
+ 268   3            {
+ 269   4              if(floors[step]==1)
+ 270   4              {
+ 271   5                elevator = step;
+ 272   5                break;
+ 273   5              }
+ 274   4              else
+ 275   4              {
+ 276   5                elevator=sevensegmentValue;
+ 277   5              }
+ 278   4            }
+ 279   3            if(doorclose)
+ 280   3            {
+ 281   4                if(sevensegmentValue < elevator)
+ 282   4                  {
+ 283   5                    up = true;
+ 284   5                  }
+ 285   4                else if(sevensegmentValue > elevator)
+ 286   4                  {
+ 287   5                    down = true;
+ 288   5                  }
+ 289   4                else
+ 290   4                {
+ 291   5                  up = false;
+ 292   5                  down = false;
+ 293   5                }
+ 294   4            }
+ 295   3            
+ 296   3            
+ 297   3          if(up && count >= 20)
+ 298   3            {
+ 299   4              motor_rotate(2,0,0);
+ 300   4              if(upvalue >= 3)
+ 301   4                {
+ 302   5                  sevensegmentValue++;
+C51 COMPILER V9.60.0.0   MAIN                                                              04/20/2020 05:36:08 PAGE 6   
 
- 303          /*
- 304          void elevUP(void)
- 305          {
- 306            SET_BIT(P2,0);
- 307            CLR_BIT(P2,1);
- 308          }
- 309          void elecvDOWN(void)
- 310          {
- 311            CLR_BIT(P2,0);
- 312            SET_BIT(P2,1);
- 313          }
- 314          void elevSTOP(void)
- 315          {
- 316            DIO_write(2,0,1);
- 317            DIO_write(2,1,1);
- 318          }
- 319          void open(void)
- 320          {
- 321            SET_BIT(P2,4);
- 322            CLR_BIT(P2,5);
- 323          } 
- 324          void close(void)
- 325          {
- 326            CLR_BIT(P2,4);
- 327            SET_BIT(P2,5);
- 328          } 
- 329          void stop(void)
- 330          {
- 331          CLR_BIT(P2,5);
- 332            CLR_BIT(P2,4);
- 333          }
- 334          */
- 335          
- 336          void checkPresed(void)
- 337            {
- 338   1          for(step=0;step<8;step++)
- 339   1          {
- 340   2            buttonPresed[step]=DIO_read(3,step);
- 341   2            delay_ms(1);
- 342   2          }
- 343   1          for(step=0;step<8;step++)
- 344   1          {
- 345   2            if(0 == buttonPresed[step])
- 346   2            {
- 347   3              buttonPresedFlags[step] = 1;
- 348   3            }
- 349   2          }
- 350   1        }
- 351              
+ 303   5                  seven_seg_write(0,sevensegmentValue,0);
+ 304   5                  upvalue = 0;
+ 305   5                }
+ 306   4                upvalue++;
+ 307   4                
+ 308   4                  count =0;   
+ 309   4            }
+ 310   3            
+ 311   3          if(down && count >= 20)
+ 312   3            {
+ 313   4              motor_rotate(2,0,1);
+ 314   4              if(downvalue >= 3)
+ 315   4                {
+ 316   5                  sevensegmentValue--;
+ 317   5                  seven_seg_write(0,sevensegmentValue,0);
+ 318   5                  downvalue = 0;
+ 319   5                }
+ 320   4                downvalue++;
+ 321   4                
+ 322   4                count =0;
+ 323   4            }
+ 324   3      
+ 325   3        }
+ 326   2          
+ 327   2      }
+ 328   1        } 
+ 329          
+ 330          
+ 331              
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    728    ----
+   CODE SIZE        =    960    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     45    ----
+   DATA SIZE        =     54    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
