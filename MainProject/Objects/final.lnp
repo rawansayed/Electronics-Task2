@@ -1,0 +1,7 @@
+".\Objects\DIO.obj",
+".\Objects\Keypad.obj",
+".\Objects\main.obj",
+".\Objects\SevenSegments.obj",
+".\Objects\stepper.obj" 
+TO ".\Objects\final" 
+PRINT(".\Listings\final.m51") RAMSIZE(256) 

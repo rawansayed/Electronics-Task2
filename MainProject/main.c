@@ -27,12 +27,12 @@ char entering=0;
 char buttonPresed[8] = {1,1,1,1,1,1,1,1};
 char buttonPresedFlags[8] = {0,0,0,0,0,0,0,0};
 char keypadFlags[11] = {0,0,0,0,0,0,0,0,0,0,0};
-char keypadvalues[5] = {0};
+// char keypadvalues[5] = {0};
 char floors[4] = {0,0,0,0}; // sevenSegments number
 
-sbit led = P0^0;
+
 volatile char count = 0;
-volatile char count2 = 0;
+//volatile char count2 = 0;
 volatile char wait = 0;
 
 void ext_int_0() interrupt 0
@@ -50,7 +50,7 @@ void timer0_isr() interrupt 1
 	TH0 = 0X4B;        //ReLoad the timer value
     TL0 = 0XFD;
     count++;        // Toggle the LED pin 
-		count2++;
+		//count2++;
 }
 void keypadPresed(void)
 {	
@@ -103,9 +103,8 @@ void main (void)
 		
     EA = 1; 
    
-	 //DIO_setPin_OutPutMode(2,0,1);
-	 //DIO_setPin_OutPutMode(2,1,1);
-		SET_BIT(IE,0);
+
+		SET_BIT(IE,0); 
 		SET_BIT(TCON,0);
 	
 
@@ -124,7 +123,7 @@ void main (void)
 		while(buttonFlagPresed)
 	{
 		
-		checkPresed();
+			checkPresed();
 			if(buttonPresedFlags[0]==1 || keypadFlags[0] == 1 )	
 				{
 					if (sevensegmentValue == 0)
@@ -144,7 +143,12 @@ void main (void)
 				{
 					if (sevensegmentValue == 1)
 						{
-							if(	down && buttonPresedFlags[4])
+							if (keypadFlags[1] == 1)
+								{
+									open=true;
+									keypadFlags[1] = 0;
+								}
+							else if(	down && buttonPresedFlags[4])
 								{
 									open=true;
 									buttonPresedFlags[4] = 0;									
@@ -154,10 +158,12 @@ void main (void)
 									open=true;
 									buttonPresedFlags[3] = 0;
 								}
-							else 
+							else if(!up && !down)
 								{
 									open=true;
 									keypadFlags[1] = 0;
+									buttonPresedFlags[3] = 0;
+									buttonPresedFlags[4] = 0;
 								}
 							floors[1] = 0;	
 						}
@@ -171,7 +177,12 @@ void main (void)
 				{
 					if (sevensegmentValue == 2)
 						{
-							if(	down && buttonPresedFlags[6])
+							if (keypadFlags[2] == 1 )	
+								{
+									open = true;
+									keypadFlags[2] = 0;
+								}								
+							else if(	down && buttonPresedFlags[6])
 								{						
 									buttonPresedFlags[6] = 0;
 									open = true;							
@@ -181,9 +192,11 @@ void main (void)
 									buttonPresedFlags[5] = 0;
 									open = true;
 								}
-							else
+							else if ( !up && !down )
 							{
 								keypadFlags[2] = 0;
+								buttonPresedFlags[6] = 0;
+								buttonPresedFlags[5] = 0;
 								open = true;
 							}
 						floors[2] = 0;	
@@ -287,11 +300,13 @@ void main (void)
 						{
 							down = true;
 						}
+						/*
 					else
 					{
 						up = false;
 						down = false;
 					}
+						*/
 			}
 			
 			

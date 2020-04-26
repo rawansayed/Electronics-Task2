@@ -61,8 +61,7 @@ void motor_rotate(unsigned char portname , unsigned char setPosition,unsigned ch
 				write_high_nibble(portname,rot_angle[g]);
 					delay_ms(200);
 				}
-				
-				
+
 			}
 		}
 }

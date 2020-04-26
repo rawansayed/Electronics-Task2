@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.0.0   DIO                                                               04/20/2020 19:48:03 PAGE 1   
+C51 COMPILER V9.60.0.0   DIO                                                               04/26/2020 08:41:19 PAGE 1   
 
 
 C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DIO
@@ -62,7 +62,7 @@ line level    source
   52   3              CLR_BIT(P3MDOUT,pinnumber);//Set the output mode of port0 to Open-Drain mode
   53   3            }
   54   2            break;
-C51 COMPILER V9.60.0.0   DIO                                                               04/20/2020 19:48:03 PAGE 2   
+C51 COMPILER V9.60.0.0   DIO                                                               04/26/2020 08:41:19 PAGE 2   
 
   55   2          default: 
   56   2          break;
@@ -126,7 +126,7 @@ line level    source
  114   1        switch(portname)
  115   1          {
  116   2          case 0:
-C51 COMPILER V9.60.0.0   DIO                                                               04/20/2020 19:48:03 PAGE 3   
+C51 COMPILER V9.60.0.0   DIO                                                               04/26/2020 08:41:19 PAGE 3   
 
  117   2            // make the pin as input pin
  118   2            CLR_BIT(P0MDOUT,pinnumber);//Set the output mode of pinNumber of port0 to Open-Drain mode
@@ -190,7 +190,7 @@ line level    source
  176   1      }
  177          
  178          
-C51 COMPILER V9.60.0.0   DIO                                                               04/20/2020 19:48:03 PAGE 4   
+C51 COMPILER V9.60.0.0   DIO                                                               04/26/2020 08:41:19 PAGE 4   
 
  179          
  180          
@@ -254,7 +254,7 @@ line level    source
  238          {
  239   1        unsigned int i,j;
  240   1           for(i=0;i<=k;i++)
-C51 COMPILER V9.60.0.0   DIO                                                               04/20/2020 19:48:03 PAGE 5   
+C51 COMPILER V9.60.0.0   DIO                                                               04/26/2020 08:41:19 PAGE 5   
 
  241   1            for(j=0;j<110;j++);
  242   1      }
